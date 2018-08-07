@@ -3,10 +3,10 @@ https://www.hiwendi.com/
 
 ## 一.说明
 
-1. 环境Python3.6.4, Django2.0.7; 系统环境ubuntu14.04, uwsgi, Nginx, mysql
+### 环境Python3.6.4, Django2.0.7; 系统环境ubuntu14.04, uwsgi, Nginx, mysql
 
 
-2. 使用技术
+### 使用技术
 
 bootstrap
 
@@ -21,7 +21,7 @@ logging
 https
 
 
-3.相关文件
+### 相关文件
 
 nginx配置文件, uwsgi配置文件, requir文件
 
@@ -32,7 +32,7 @@ myweb_uwsgi.ini
 requirements.txt
 
 
-## 二. 部署生产环境注意修改
+## 二. 部署生产环境注意修改settings.py
 
 ALLOWED_HOSTS
 
@@ -47,5 +47,5 @@ SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
 
 
-## 生产环境下, https://www.hiwendi.com/
-## 开发环境下, http://127.0.0.1:8000
+### 生产环境下, https://www.hiwendi.com/
+### 开发环境下, http://127.0.0.1:8000
