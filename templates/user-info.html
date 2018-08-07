@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="container">
+
+        <div  style="margin-top: 30px;">基本信息 :</div>
+        <table class="table table-bordered table-striped text-center">
+            <tr>
+                <td>姓名</td>
+                <td>{{ user.name }}</td>
+            </tr>
+            <tr>
+                <td>邮箱</td>
+                <td>{{ user.email }}</td>
+            </tr>
+            <tr>
+                <td>电话</td>
+                <td>{{ user.phone }}</td>
+            </tr>
+            <tr>
+                <td>注册时间</td>
+                <td>{{ user.created|date:'Y-m-d h:i:s' }}</td>
+            </tr>
+            <tr>
+                <td>最后登录时间</td>
+                <td>{{ user.login_time|date:'Y-m-d h:i:s' }}</td>
+            </tr>
+        </table>
+
+        <a class="btn btn-primary" href="/user/reset">修改密码</a>
+
+    </div>
+{% endblock %}

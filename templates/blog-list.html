@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="container" style="margin-top: 20px">
+        {% if catagory %}
+            <ul>
+                <li style="list-style-type:none">
+                    <div>
+                        <span>分类: {{ catagory.name }}</span>
+                    </div>
+                    <div>
+                        <span>描述: {{ catagory.remark }}</span>
+                    </div>
+                    <div>
+                        <a href="/catagory">返回分类列表</a>
+                    </div>
+                </li>
+            </ul>
+            <hr>
+        {% endif %}
+
+        {% if tag %}
+            <ul>
+                <li style="list-style-type:none">
+                    <div>
+                        <span>标签: {{ tag.name }}</span>
+                    </div>
+                    <div>
+                        <span>描述: {{ tag.remark }}</span>
+                    </div>
+                    <div>
+                        <a href="/tag">返回标签列表</a>
+                    </div>
+                </li>
+            </ul>
+            <hr>
+        {% endif %}
+
+        <ul>
+            {% for blog in blogs %}
+                <li style="list-style-type:none">
+                    <div align="left" class="blog">
+                        <div class="title">
+                            <a href="{% url 'blog_get_detail' blog.id %}"><h4>{{ blog.title }}</h4></a>
+                        </div>
+                    </div>
+                    <div class="intro" style="color: #999999">
+                        {{ blog.intro|truncatechars:100 }}
+                    </div>
+                    <div class="info">
+                        <span class="created">{{ blog.created | date:'Y-m-d H:i' }}</span>
+                        <span class="catagory">&nbsp;&nbsp;阅读数:{{ blog.read }}</span>
+                        <span class="catagory">&nbsp;&nbsp;评论数:{{ blog.conum }}</span>
+                        <span class="catagory">&nbsp;&nbsp;目录:{{ blog.catagory.name }}</span>
+                        <span class="catagory">&nbsp;&nbsp;标签:{{ blog.alltags }}</span>
+                    </div>
+                </li>
+                <hr>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}
+
+
+
+
+
+

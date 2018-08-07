@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+
+    <script type="text/javascript" src="/static/js/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
+{#    <script type="text/javascript" src="/static/js/My97DatePicker/WdatePicker.js"></script>#}
+    <link type="text/css" rel="stylesheet" href="/static/css/bootstrap.css">
+    <link type="text/css" rel="stylesheet" href="/static/css/bootstrap-theme.css">
+
+    <style>
+        .blog {
+            padding: 10px 0px 0px 0px;
+        }
+
+        .blog .info span {
+            padding-right: 10px;
+            color: black;
+        }
+
+        .blog .summary {
+            padding-top: 20px;
+        }
+
+        .errorlist {
+            color: red;
+        }
+    </style>
+
+    {#$('.content img').css({'width': '100%', 'height': 'auto', 'visibility': 'inherit'});#}
+
+    <script>
+        {#图片自适应大小, 响应式#}
+        $(window).load(function () {
+            $(".content img").addClass("img-responsive img-rounded");
+        })
+    </script>
+</head>
+<body>
+{% include 'nav.html' %}
+{% block content %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用户登录</title>
+    <link type="text/css" rel="stylesheet" href="/static/css/mobi.min.css">
+    <style>
+        .errorlist {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+<div class="flex-center">
+    <div class="container">
+        <div class="flex-center">
+            <div class="unit-1-2 unit-1-on-mobile">
+                <h3>注册</h3>
+                <form class="form" action="/user/regist/" method="post">{% csrf_token %}
+                    姓名:
+                    <input type="text" name="name"/>
+                    邮箱:
+                    <input type="email" name="email"/>
+                    电话:
+                    <input type="text" name="phone"/>
+                    密码:
+                    <input type="password" name="password"/>
+                    <span class="errorlist">{{ error }}</span>
+                    <button type="submit" class="btn btn-primary btn-block">注册</button>
+                </form>
+                <div class="flex-left top-gap text-small">
+                    <div class="unit-2-3"><span>已有账号？<a href="/user/login">登录</a></span></div>
+                    <div class="unit-1-3 flex-right"><a href="/">返回首页</a></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block content %}
+
+    <div class="container">
+        <div class="blog">
+            <div class="title">
+                <a href="#"><h2>{{ blog.title }}</h2></a>
+            </div>
+            <div class="info">
+                <span class="created">{{ blog.created | date:'Y-m-d H:i' }}</span>
+                <span class="catagory">&nbsp;&nbsp;阅读数:{{ blog.read }}</span>
+                <span class="catagory">&nbsp;&nbsp;评论数:{{ blog.conum }}</span>
+                <span class="catagory">&nbsp;&nbsp;目录:{{ blog.catagory.name }}</span>
+                <span class="catagory">&nbsp;&nbsp;标签:{{ blog.alltags }}</span>
+            </div>
+            <div class="content" style="border: 1px solid;padding: 10px;">
+                {% autoescape off %}
+                    {{ blog.content }}
+                {% endautoescape %}
+            </div>
+        </div>
+        <div class="comment" style="margin: 40px 0px 100px 0px ;">
+            <div class="comment-post" style="margin: 40px 0px;">
+                <h3>填写评论</h3>
+                <form action="{% url 'blog_get_detail' blog.id %}" method="post">
+                    {% csrf_token %}
+                    <div style="padding-top: 10px">
+                        {{ form.content }}
+                    </div>
+                    <div class="errors" style="color: red;">
+                        {{ form.content.error_messages }}
+                    </div>
+                    <button class="btn btn-primary" type="submit" style="margin-top: 10px">提交</button>
+                </form>
+            </div>
+
+            <div class="comments-display">
+                <h3>评论</h3>
+                <hr>
+                {% for comment in comments %}
+                    <div style="padding-top: 10px;">
+                        {{ comment.created|date:'Y-m-d H:i:s' }}&nbsp;&nbsp;&nbsp;{{ comment.floor }}&nbsp;&nbsp;&nbsp;用户:{{ comment.userName }}
+                    </div>
+                    <div style="padding-top: 8px;">
+                        {{ comment.content }}
+                    </div>
+                    <hr>
+                {% endfor %}
+            </div>
+
+        </div>
+
+    </div>
+
+{% endblock %}

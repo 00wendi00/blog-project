@@ -1,0 +1,56 @@
+{% block header %}
+    <div style="background-color: #2b2b2b;">
+        <div class="container">
+            <nav class="navbar-collapse" role="navigation">
+                <div class="container-fluid">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse"
+                                data-target="#example-navbar-collapse">
+{#                            <span class="sr-only">切换导航</span>#}
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a class="navbar-brand" href="/">张文迪的博客</a>
+                    </div>
+                    {% if is_login %}
+                        <div class="navbar-right">
+                            <a class="navbar-brand glyphicon glyphicon-off"
+                               href="/user/logout?next={{ request.path }}">{{ username }}</a>
+                        </div>
+                        <div class="navbar-right">
+                            <a class="navbar-brand glyphicon glyphicon-user"
+                               href="/user/info/">{{ username }}</a>
+                        </div>
+                    {% else %}
+                        <div class="navbar-right">
+                            <a class="navbar-brand glyphicon glyphicon-user"
+                               href="/user/login?next={{ request.path }}">{{ username }}</a>
+                        </div>
+                    {% endif %}
+                    <div class="collapse navbar-collapse" id="example-navbar-collapse">
+                        <ul class="nav navbar-nav">
+                            <li><a href="/">博客列表</a></li>
+                            <li><a href="/catagory">分类</a></li>
+                            <li><a href="/tag">标签</a></li>
+{#                            <li class="dropdown">#}
+{#                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">#}
+{#                                    Java <b class="caret"></b>#}
+{#                                </a>#}
+{#                                <ul class="dropdown-menu">#}
+{#                                    <li><a href="#">jmeter</a></li>#}
+{#                                    <li><a href="#">EJB</a></li>#}
+{#                                    <li><a href="#">Jasper Report</a></li>#}
+{#                                    <li class="divider"></li>#}
+{#                                    <li><a href="#">分离的链接</a></li>#}
+{#                                    <li class="divider"></li>#}
+{#                                    <li><a href="#">另一个分离的链接</a></li>#}
+{#                                </ul>#}
+{#                            </li>#}
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </div>
+{% endblock %}
