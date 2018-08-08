@@ -8,6 +8,8 @@ https://www.hiwendi.com/
 
 ### 使用技术
 
+https
+
 bootstrap
 
 kindeditor
@@ -16,9 +18,9 @@ admin
 
 cache
 
-logging
+threading --> 异步发送邮件
 
-https
+logging
 
 
 ### 相关文件

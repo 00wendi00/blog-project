@@ -27,7 +27,7 @@ def __send_email(receivers, name, subject, content):
     # 第三方 SMTP 服务
     mail_host = "smtp.qq.com"  # 设置服务器
     mail_user = "842876912@qq.com"  # 用户名
-    mail_pass = "oqwmdhnczeqpbcia"  # 口令
+    mail_pass = ""  # 口令
 
     sender = '842876912@qq.com'
 
