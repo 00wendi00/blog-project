@@ -1,5 +1,5 @@
 # 个人博客源码
-https://www.hiwendi.com/
+地址: https://www.hiwendi.com/
 
 测试api: https://www.hiwendi.com/api/
 
@@ -56,3 +56,12 @@ SESSION_COOKIE_SECURE = True
 ### 生产环境下, https://www.hiwendi.com/
 ### api, https://www.hiwendi.com/api/
 ### 开发环境下, http://127.0.0.1:8000
+
+
+待解决 :
+
+背景色
+
+seo
+
+代码高亮
