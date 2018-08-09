@@ -22,10 +22,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '#c)(b%omfs9b=52gm(d)uefcli*71rt0u0j-4yy*!o1tm22%j0'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'www.hiwendi.com','hiwendi.com', '120.78.176.222']
-# ALLOWED_HOSTS = ['www.hiwendi.com']
+# ALLOWED_HOSTS = ['172.18.7.36', 'localhost', '127.0.0.1', 'www.hiwendi.com','hiwendi.com', '120.78.176.222']
+ALLOWED_HOSTS = ['www.hiwendi.com']
 
 # Application definition
 
@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'blog',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -74,17 +75,17 @@ WSGI_APPLICATION = 'blog_project.wsgi.application'
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'blog',
-        'HOST': 'localhost',
-        'PORT': '3306',
-        'USER': 'root',
-        'PASSWORD': '0000',
-        'OPTIONS': {
-            'init_command': 'set sql_mode="STRICT_TRANS_TABLES"',
-        },
-    },
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'NAME': 'blog',
+    #     'HOST': 'localhost',
+    #     'PORT': '3306',
+    #     'USER': 'root',
+    #     'PASSWORD': '0000',
+    #     'OPTIONS': {
+    #         'init_command': 'set sql_mode="STRICT_TRANS_TABLES"',
+    #     },
+    # },
 }
 
 # Password validation
@@ -104,6 +105,15 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+# REST_FRAMEWORK setting
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
@@ -129,8 +139,8 @@ LOGGING = {
         'django': {
             'level': 'INFO',
             'class': 'logging.handlers.RotatingFileHandler',
-            # 'filename': '/var/log/blog-django.log',
-            'filename': 'D:\\data\\django.log',
+            'filename': '/var/log/blog-django.log',
+            # 'filename': 'D:\\data\\django.log',
             'maxBytes': 1024 * 1024 * 5,  # 5 MB
             'backupCount': 100,
             'formatter': 'detail',
@@ -138,8 +148,8 @@ LOGGING = {
         'app': {
             'level': 'INFO',
             'class': 'logging.handlers.RotatingFileHandler',
-            # 'filename': '/var/log/blog-app.log',
-            'filename': 'D:\\data\\app.log',
+            'filename': '/var/log/blog-app.log',
+            # 'filename': 'D:\\data\\app.log',
             'maxBytes': 1024 * 1024 * 5,  # 5 MB
             'backupCount': 100,
             'formatter': 'detail',
@@ -180,14 +190,14 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_BROWSER_XSS_FILTER = True
 
 # http redirect https website
-SECURE_SSL_REDIRECT = False
-# SECURE_SSL_REDIRECT = True
+# SECURE_SSL_REDIRECT = False
+SECURE_SSL_REDIRECT = True
 
 # 和SSL配合使用
 # Whether to use a secure cookie for the session cookie. If this is set to True, the cookie will be marked as "secure,"
 # which means browsers may ensure that the cookie is only sent under an HTTPS connection.
-SESSION_COOKIE_SECURE = False
-# SESSION_COOKIE_SECURE = True
+# SESSION_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = True
 
 # Whether to use a secure cookie for the CSRF cookie. If this is set to True, the cookie will be marked as "secure,"
 # which means browsers may ensure that the cookie is only sent with an HTTPS connection.
@@ -208,6 +218,8 @@ CACHES = {
     }
 }
 
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
 MEDIA_URL = '/static/upload/'
 MEDIA_ROOT = os.path.join(BASE_DIR + '/static', 'upload')
@@ -216,3 +228,11 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
     '/static/',
 )
+
+MD5_SALT = ''
+
+MAIL_HOST = 'smtp.qq.com'
+MAIL_USER = ''
+MAIL_PASS = ''
+MAIL_PORT = 25
+MAIL_HEADER = '张文迪的邮箱'

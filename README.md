@@ -1,9 +1,11 @@
 # 个人博客源码
 https://www.hiwendi.com/
 
+测试api: https://www.hiwendi.com/api/
+
 ## 一.说明
 
-### 环境Python3.6.4, Django2.0.7; 系统环境ubuntu14.04, uwsgi, Nginx, mysql
+### 环境Python3.6.4, Django2.0.7; djangorestframework==3.8.2; 系统环境ubuntu14.04, uwsgi, Nginx, mysql
 
 
 ### 使用技术
@@ -52,4 +54,5 @@ SESSION_COOKIE_SECURE = True
 
 
 ### 生产环境下, https://www.hiwendi.com/
+### api, https://www.hiwendi.com/api/
 ### 开发环境下, http://127.0.0.1:8000

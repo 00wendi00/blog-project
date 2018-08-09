@@ -15,21 +15,32 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.conf.urls import url
+from django.urls import include
 from django.views import static
 from django.views.generic import RedirectView
+from django.views.static import serve
+from rest_framework import routers
 
+from blog import views_api
 from blog.views import *
 from blog_project import settings
-from blog.utils.uploads import upload_image
+from blog_project.settings import STATIC_ROOT
+
+router = routers.DefaultRouter()
+router.register(r'tag_api', views_api.TagViewSet)
+router.register(r'catagory_api', views_api.CatagoryViewSet)
 
 urlpatterns = [
+    url(r'^static/(?P<path>.*)$', serve, {'document_root': STATIC_ROOT}),
+
     url('admin/', admin.site.urls),
+    url(r'^admin/upload/(?P<dir_name>[^/]+)$', upload_image, name='upload_image'),
     url(r'^favicon.ico$', RedirectView.as_view(url=r'static/favicon.ico')),
+
     url(r'^$', get_blogs),
     url(r'^blogs/$', get_blogs),
     url(r'^detail/(\d+)/$', get_details, name='blog_get_detail'),
     url(r"^upload/(?P<path>.*)$", static.serve, {"document_root": settings.MEDIA_ROOT, }),
-    url(r'^admin/upload/(?P<dir_name>[^/]+)$', upload_image, name='upload_image'),
 
     url(r'^catagory/$', get_catagory),
     url(r'^tag/$', get_tag),
@@ -40,4 +51,7 @@ urlpatterns = [
     url(r'^user/regist/$', user_regist),
     url(r'^user/reset/$', user_reset),
     url(r'^user/forget/$', user_forget),
+
+    url(r'^api/', include(router.urls)),
+    # url(r'^api-auth/', include('rest_framework.urls'), name='rest_framework'),
 ]
