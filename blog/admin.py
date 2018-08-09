@@ -75,3 +75,7 @@ class ViewlogAdmin(admin.ModelAdmin):
 
     list_display = ('blog', 'userId', 'created', 'ip')
     readonly_fields = ('blog', 'userId', 'created', 'ip')
+
+
+#在admin中注册绑定
+# admin.site.register(Blog, BlogAdmin)
