@@ -9,31 +9,10 @@
 # 在目录创建处有修改
 
 
-from django.views.decorators.csrf import csrf_exempt
-from django.http import HttpResponse
-
 import os
 import uuid
-import json
 import datetime as dt
-
 from blog_project import settings
-
-
-@csrf_exempt
-def upload_image(request, dir_name):
-    ##################
-    #  kindeditor图片上传返回数据格式说明：
-    # {"error": 1, "message": "出错信息"}
-    # {"error": 0, "url": "图片地址"}
-    ##################
-    result = {"error": 1, "message": "上传出错"}
-    files = request.FILES.get("imgFile", None)
-    if files:
-        result = image_upload(files, dir_name)
-        response = HttpResponse(json.dumps(result), content_type="application/json")
-        response['X-Frame-Options'] = "SAMEORIGIN"  #
-    return response
 
 
 # 目录创建

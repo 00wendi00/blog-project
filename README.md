@@ -20,6 +20,8 @@ cache
 
 threading --> 异步发送邮件
 
+hashlib.md5
+
 logging
 
 

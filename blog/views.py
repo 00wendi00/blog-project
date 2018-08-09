@@ -1,14 +1,16 @@
+import json
 import random
 import logging
 
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.utils import timezone
 from django.db.models import Q
 from django.shortcuts import render, render_to_response, redirect
+from django.views.decorators.csrf import csrf_exempt
 
 from blog.forms import CommentForm
 from blog.models import *
-from blog.utils import encryption, send_email
+from blog.utils import encryption, send_email, uploads
 
 
 # @cache_page(60), 视图缓存无法判断是否登录
@@ -368,3 +370,19 @@ def user_forget(request):
         return render(request, 'forget-passwd1.html', {'remarks': '', 'is_login': False})
 
     return render(request, 'forget-passwd0.html', {'remarks': '', 'is_login': False})
+
+
+@csrf_exempt
+def upload_image(request, dir_name):
+    ##################
+    #  kindeditor图片上传返回数据格式说明：
+    # {"error": 1, "message": "出错信息"}
+    # {"error": 0, "url": "图片地址"}
+    ##################
+    result = {"error": 1, "message": "上传出错"}
+    files = request.FILES.get("imgFile", None)
+    if files:
+        result = uploads.image_upload(files, dir_name)
+        response = HttpResponse(json.dumps(result), content_type="application/json")
+        response['X-Frame-Options'] = "SAMEORIGIN"  #
+    return response
