@@ -6,9 +6,10 @@
 # @Desc  : md5加盐加密 . md5(md5(password) + salt)
 
 from hashlib import md5
+from django.conf import settings
 
 
-def gainCipher(password, salt='wadecheung'):
+def gainCipher(password, salt=settings.MD5_SALT):
     if password:
         m1 = md5()
         m1.update(password.encode('utf-8'))

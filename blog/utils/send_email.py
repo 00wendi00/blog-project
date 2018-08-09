@@ -8,6 +8,7 @@ import smtplib
 from threading import Thread
 from email.mime.text import MIMEText
 from email.header import Header
+from django.conf import settings
 
 
 def send_email_async(receivers, name, subject, content):
@@ -25,19 +26,19 @@ def __send_email(receivers, name, subject, content):
     :return:
     """
     # 第三方 SMTP 服务
-    mail_host = "smtp.qq.com"  # 设置服务器
-    mail_user = "842876912@qq.com"  # 用户名
-    mail_pass = ""  # 口令
+    mail_host = settings.MAIL_HOST  # 设置服务器
+    mail_user = settings.MAIL_USER  # 用户名
+    mail_pass = settings.MAIL_PASS  # 口令
 
-    sender = '842876912@qq.com'
+    sender = mail_user
 
     message = MIMEText(content, 'plain', 'utf-8')
-    message['From'] = Header("张文迪的邮箱", 'utf-8')
+    message['From'] = Header(settings.MAIL_HEADER, 'utf-8')
     message['To'] = Header(name, 'utf-8')  # head中的收件人
     message['Subject'] = Header(subject, 'utf-8')
 
     try:
-        smtpObj = smtplib.SMTP(mail_host, 25)
+        smtpObj = smtplib.SMTP(mail_host, settings.MAIL_PORT)
         # smtpObj.set_debuglevel(1)     输出调试信息
         # smtpObj.ehlo()
         smtpObj.login(mail_user, mail_pass)
