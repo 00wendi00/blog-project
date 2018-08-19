@@ -3,11 +3,13 @@
 # @File  : send_email.py
 # @Author: Wade Cheung
 # @Date  : 2018/7/28
-# @Desc  : gmail发送邮件
+# @Desc  : 发送邮件
 import smtplib
 from threading import Thread
 from email.mime.text import MIMEText
 from email.header import Header
+
+import logging
 from django.conf import settings
 
 
@@ -38,6 +40,7 @@ def __send_email(receivers, name, subject, content):
     message['Subject'] = Header(subject, 'utf-8')
 
     try:
+        logger = logging.getLogger('app')
         smtpObj = smtplib.SMTP(mail_host, settings.MAIL_PORT)
         # smtpObj.set_debuglevel(1)     输出调试信息
         # smtpObj.ehlo()
@@ -45,4 +48,5 @@ def __send_email(receivers, name, subject, content):
         smtpObj.sendmail(sender, receivers, message.as_string())
         # print("邮件发送成功")
     except smtplib.SMTPException as e:
-        print(e, "Error: 无法发送邮件")
+        # print(e, "Error: 无法发送邮件")
+        logger.error('无法发送邮件,原因%s' % e)

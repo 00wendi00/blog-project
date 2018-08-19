@@ -227,6 +227,11 @@ def user_regist(request):
 
 
 def user_info(request):
+    """
+    用户信息
+    :param request:
+    :return:
+    """
     if request.session.get('uid'):
         id = request.session['uid']
         user = User.objects.get(id=id)
@@ -266,6 +271,11 @@ def getIP(request):
 
 
 def user_reset(request):
+    """
+    重置密码
+    :param request:
+    :return:
+    """
     remarks = ''
     if request.method == 'POST':
         if request.session.get('uid'):
@@ -290,6 +300,11 @@ def user_reset(request):
 
 
 def user_forget(request):
+    """
+    用户忘记密码
+    :param request:
+    :return:
+    """
     if request.method == 'POST':
         if request.POST.get('email'):
             email = request.POST['email']

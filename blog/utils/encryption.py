@@ -10,6 +10,12 @@ from django.conf import settings
 
 
 def gainCipher(password, salt=settings.MD5_SALT):
+    """
+    密码加盐加密
+    :param password:
+    :param salt:
+    :return:
+    """
     if password:
         m1 = md5()
         m1.update(password.encode('utf-8'))
