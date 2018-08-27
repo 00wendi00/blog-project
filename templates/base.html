@@ -6,9 +6,11 @@
 
     <script type="text/javascript" src="/static/js/jquery-1.10.2.min.js"></script>
     <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
-{#    <script type="text/javascript" src="/static/js/My97DatePicker/WdatePicker.js"></script>#}
+    <script type="text/javascript" src="/static/js/prettify.min.js"></script>
+    {#    <script type="text/javascript" src="/static/js/My97DatePicker/WdatePicker.js"></script>#}
     <link type="text/css" rel="stylesheet" href="/static/css/bootstrap.css">
     <link type="text/css" rel="stylesheet" href="/static/css/bootstrap-theme.css">
+    <link type="text/css" rel="stylesheet" href="/static/css/prettify.css">
 
     <style>
         .blog {
@@ -38,7 +40,7 @@
         })
     </script>
 </head>
-<body>
+<body onload="prettyPrint()">
 {% include 'nav.html' %}
 {% block content %}{% endblock %}
 </body>
