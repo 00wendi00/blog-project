@@ -11,6 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 from blog.forms import CommentForm
 from blog.models import *
 from blog.utils import encryption, send_email, uploads
+from blog import tasks
 
 
 # @cache_page(60), 视图缓存无法判断是否登录
@@ -22,8 +23,8 @@ def get_blogs(request):
     '''
     catagory = request.GET.get("catagory")
     tag = request.GET.get("tag")
+    logger = logging.getLogger('app')
     try:
-        logger = logging.getLogger('app')
         if catagory:
             catagory = Catagory.objects.get(id=catagory)
             blogs = Blog.objects.all().order_by('-created').filter(isDelete=False, catagory=catagory)
@@ -40,7 +41,6 @@ def get_blogs(request):
         conum = blog.comment_set.count
         blog.conum = conum
         blog.alltags = blog.tags.all()[0].name
-
     if request.session.get('uid'):
         is_login = True
     else:
@@ -219,7 +219,8 @@ def user_regist(request):
             return render(request, 'regist.html', {'error': '此邮箱或电话已注册'})
         else:
             User.objects.create(name=name, email=email, phone=phone, password=password, creatIp=getIP(request))
-            send_email.send_email_async([email], name, '注册成功', '恭喜您成功注册网站用户!')  # 发送邮箱
+            # send_email.send_email_async([email], name, '注册成功', '恭喜您成功注册网站用户!')  # 线程发送邮箱
+            tasks.send_email.delay([email], name, '注册成功', '恭喜您成功注册网站用户!')  # mq + celery 发送邮件
             return render(request, 'login.html', {'error': '注册成功, 请登录!'})
 
     else:
@@ -319,7 +320,8 @@ def user_forget(request):
                 verify.ip = getIP(request)
                 verify.save()
 
-                send_email.send_email_async(email, user.name, '重置密码验证码', '您的验证码为%s' % verify.code)
+                # send_email.send_email_async(email, user.name, '重置密码验证码', '您的验证码为%s' % verify.code)
+                tasks.send_email.delay(email, user.name, '重置密码验证码', '您的验证码为%s' % verify.code)
                 request.session['verify'] = user.email
                 return render(request, 'forget-passwd1.html', {'remarks': '已发送验证码', 'is_login': False})
             else:
