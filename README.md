@@ -10,6 +10,10 @@
 
 ### 使用技术
 
+RabbitMQ
+
+celery
+
 https
 
 bootstrap
@@ -55,6 +59,7 @@ SESSION_COOKIE_SECURE = True
 
 ### 生产环境下, https://www.hiwendi.com/
 ### api, https://www.hiwendi.com/api/
+### RabbitMQ, http://120.78.176.222:15672
 ### 开发环境下, http://127.0.0.1:8000
 
 

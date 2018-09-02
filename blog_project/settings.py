@@ -24,7 +24,7 @@ SECRET_KEY = '#c)(b%omfs9b=52gm(d)uefcli*71rt0u0j-4yy*!o1tm22%j0'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-# ALLOWED_HOSTS = ['172.18.7.36', 'localhost', '127.0.0.1', 'www.hiwendi.com','hiwendi.com', '120.78.176.222']
+# ALLOWED_HOSTS = [ 'localhost', '127.0.0.1']
 ALLOWED_HOSTS = ['www.hiwendi.com']
 
 # Application definition
@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'blog',
     'rest_framework',
+    'djcelery',
 ]
 
 MIDDLEWARE = [
@@ -75,17 +76,17 @@ WSGI_APPLICATION = 'blog_project.wsgi.application'
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.mysql',
-    #     'NAME': 'blog',
-    #     'HOST': 'localhost',
-    #     'PORT': '3306',
-    #     'USER': 'root',
-    #     'PASSWORD': '0000',
-    #     'OPTIONS': {
-    #         'init_command': 'set sql_mode="STRICT_TRANS_TABLES"',
-    #     },
-    # },
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'blog',
+        'HOST': 'localhost',
+        'PORT': '3306',
+        'USER': 'root',
+        'PASSWORD': '0000',
+        'OPTIONS': {
+            'init_command': 'set sql_mode="STRICT_TRANS_TABLES"',
+        },
+    },
 }
 
 # Password validation
@@ -218,21 +219,27 @@ CACHES = {
     }
 }
 
-
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
 MEDIA_URL = '/static/upload/'
 MEDIA_ROOT = os.path.join(BASE_DIR + '/static', 'upload')
 
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, "static"),
-    '/static/',
+    # os.path.join(BASE_DIR, "static"),
+    # '/static/',
 )
 
 MD5_SALT = ''
 
 MAIL_HOST = 'smtp.qq.com'
-MAIL_USER = ''
+MAIL_USER = '842876912@qq.com'
 MAIL_PASS = ''
-MAIL_PORT = 25
+MAIL_PORT = 465
 MAIL_HEADER = '张文迪的邮箱'
+
+import djcelery
+
+djcelery.setup_loader()
+# 数据库调度
+CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
+BROKER_URL = 'amqp://账号:密码@127.0.0.1:5672/vhost'
