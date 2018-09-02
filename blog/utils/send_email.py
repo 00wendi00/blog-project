@@ -4,6 +4,7 @@
 # @Author: Wade Cheung
 # @Date  : 2018/7/28
 # @Desc  : 发送邮件
+
 import smtplib
 from threading import Thread
 from email.mime.text import MIMEText
@@ -13,7 +14,27 @@ import logging
 from django.conf import settings
 
 
+def send_email_async_mq(receivers, name, subject, content):
+    """
+    rabbitmq + celery
+    :param receivers:
+    :param name:
+    :param subject:
+    :param content:
+    :return:
+    """
+    __send_email(receivers, name, subject, content)
+
+
 def send_email_async(receivers, name, subject, content):
+    """
+    线程, 异步发送邮件
+    :param receivers:
+    :param name:
+    :param subject:
+    :param content:
+    :return:
+    """
     thr = Thread(target=__send_email, args=[receivers, name, subject, content])
     thr.start()
 
@@ -39,9 +60,9 @@ def __send_email(receivers, name, subject, content):
     message['To'] = Header(name, 'utf-8')  # head中的收件人
     message['Subject'] = Header(subject, 'utf-8')
 
+    logger = logging.getLogger('app')
     try:
-        logger = logging.getLogger('app')
-        smtpObj = smtplib.SMTP(mail_host, settings.MAIL_PORT)
+        smtpObj = smtplib.SMTP_SSL(mail_host, settings.MAIL_PORT)
         # smtpObj.set_debuglevel(1)     输出调试信息
         # smtpObj.ehlo()
         smtpObj.login(mail_user, mail_pass)
