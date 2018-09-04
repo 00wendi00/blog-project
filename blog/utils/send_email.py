@@ -56,9 +56,9 @@ def __send_email(receivers, name, subject, content):
     sender = mail_user
 
     message = MIMEText(content, 'plain', 'utf-8')
-    message['From'] = Header(settings.MAIL_HEADER, 'utf-8')
-    message['To'] = Header(name, 'utf-8')  # head中的收件人
-    message['Subject'] = Header(subject, 'utf-8')
+    message['From'] = Header(mail_user)  # 不能取settings.MAIL_HEADER ,settings文件为utf-8编码, 多次utf-8编码, 发送邮件时会出现乱码
+    message['To'] = Header(name)  # head中的收件人
+    message['Subject'] = Header(subject)
 
     logger = logging.getLogger('app')
     try:
