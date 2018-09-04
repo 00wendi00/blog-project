@@ -56,7 +56,8 @@ def __send_email(receivers, name, subject, content):
     sender = mail_user
 
     message = MIMEText(content, 'plain', 'utf-8')
-    message['From'] = Header(mail_user)  # 不能取settings.MAIL_HEADER ,settings文件为utf-8编码, 多次utf-8编码, 发送邮件时会出现乱码
+    # 无法解决发件人在outlook显示乱码问题
+    message['From'] = '%s<%s>' % (Header('张文迪的博客网站', 'utf-8'), mail_user)
     message['To'] = Header(name)  # head中的收件人
     message['Subject'] = Header(subject)
 
