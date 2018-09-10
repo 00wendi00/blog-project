@@ -24,6 +24,7 @@ app = Celery('blog')
 app.config_from_object('django.conf:settings')
 app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
 
+# 可以用root账号启动
 platforms.C_FORCE_ROOT = True
 
 

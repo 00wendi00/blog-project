@@ -58,6 +58,7 @@ SESSION_COOKIE_SECURE = True
 
 
 ### 生产环境下, https://www.hiwendi.com/
+### RabbitMQ 管理界面, http://120.78.176.222:15672/#/
 ### api, https://www.hiwendi.com/api/
 ### 开发环境下, http://127.0.0.1:8000
 
@@ -69,6 +70,8 @@ SESSION_COOKIE_SECURE = True
 seo
 
 博客保存草稿箱
+
+celery无故停止
 
 邮件发送失败的处理, celery多次try
 
