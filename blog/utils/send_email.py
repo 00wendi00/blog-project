@@ -69,6 +69,9 @@ def __send_email(receivers, name, subject, content):
         smtpObj.login(mail_user, mail_pass)
         smtpObj.sendmail(sender, receivers, message.as_string())
         # print("邮件发送成功")
+        return 'success' + receivers + name + subject + content
     except smtplib.SMTPException as e:
         # print(e, "Error: 无法发送邮件")
         logger.error('无法发送邮件,原因%s' % e)
+
+    return 'failed' + receivers + name + subject + content

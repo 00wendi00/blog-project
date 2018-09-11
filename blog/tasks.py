@@ -14,4 +14,4 @@ from blog.utils.send_email import send_email_async_mq
 
 @shared_task
 def send_email(receivers, name, subject, content):
-    send_email_async_mq(receivers, name, subject, content)
+    return send_email_async_mq(receivers, name, subject, content)
