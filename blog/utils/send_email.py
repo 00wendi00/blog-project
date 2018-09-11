@@ -23,7 +23,7 @@ def send_email_async_mq(receivers, name, subject, content):
     :param content:
     :return:
     """
-    __send_email(receivers, name, subject, content)
+    return __send_email(receivers, name, subject, content)
 
 
 def send_email_async(receivers, name, subject, content):
