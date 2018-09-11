@@ -71,10 +71,4 @@ seo
 
 博客保存草稿箱
 
-celery无故停止
-
 邮件发送失败的处理, celery多次try
-
-邮件发送成功的记录, 发送失败的记录已写进logger
-http://docs.jinkan.org/docs/celery/django/first-steps-with-django.html#using-celery-with-django
-执行megrate 报错ImportError: cannot import name 'python_2_unicode_compatible'
