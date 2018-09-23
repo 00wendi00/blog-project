@@ -21,7 +21,7 @@ from django.views.generic import RedirectView
 from django.views.static import serve
 from rest_framework import routers
 
-from blog import views_api
+from blog import views_api, views
 from blog.views import *
 from blog_project import settings
 from blog_project.settings import STATIC_ROOT
@@ -55,3 +55,5 @@ urlpatterns = [
     url(r'^api/', include(router.urls)),
     # url(r'^api-auth/', include('rest_framework.urls'), name='rest_framework'),
 ]
+handler404 = views.page_not_found
+handler500 = views.page_error

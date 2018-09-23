@@ -14,6 +14,16 @@ from blog.utils import encryption, send_email, uploads
 from blog import tasks
 
 
+@csrf_exempt
+def page_not_found(request):
+    return render_to_response('404.html')
+
+
+@csrf_exempt
+def page_error(request):
+    return render_to_response('500.html')
+
+
 # @cache_page(60), 视图缓存无法判断是否登录
 def get_blogs(request):
     '''
