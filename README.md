@@ -5,8 +5,11 @@
 
 ## 一.说明
 
-### 环境Python3.6.4, Django2.0.7; djangorestframework==3.8.2; 系统环境ubuntu14.04, uwsgi, Nginx, mysql
+### 环境Python3.6.4, Django2.1; djangorestframework==3.8.2; 系统环境ubuntu14.04, uwsgi, Nginx, mysql
 
+Django2.0.7存在安全问题, 改为版本2.1 : https://nvd.nist.gov/vuln/detail/CVE-2018-14574
+
+Django2.1要求>=python3.5
 
 ### 使用技术
 
