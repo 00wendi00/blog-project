@@ -37,12 +37,12 @@ def get_blogs(request):
     try:
         if catagory:
             catagory = Catagory.objects.get(id=catagory)
-            blogs = Blog.objects.all().order_by('-created').filter(isDelete=False, catagory=catagory)
+            blogs = Blog.objects.all().order_by('-created').filter(isDraft=False, isDelete=False, catagory=catagory)
         elif tag:
             tag = Tag.objects.get(id=tag)
-            blogs = Blog.objects.all().order_by('-created').filter(isDelete=False, tags=tag)
+            blogs = Blog.objects.all().order_by('-created').filter(isDraft=False, isDelete=False, tags=tag)
         else:
-            blogs = Blog.objects.all().order_by('-created').filter(isDelete=False)
+            blogs = Blog.objects.all().order_by('-created').filter(isDraft=False, isDelete=False)
     except Exception:
         logger.info('bloglist does not exist, catagory=%s, tag=%s' % (catagory, tag))
         raise Http404
@@ -101,7 +101,7 @@ def get_details(request, blog_id):
     '''
     try:
         logger = logging.getLogger('app')
-        blog = Blog.objects.get(id=blog_id)
+        blog = Blog.objects.get(id=blog_id, isDraft=False, isDelete=False)
         blog.read += 1
         blog.save()
 

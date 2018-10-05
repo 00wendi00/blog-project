@@ -38,6 +38,7 @@ class Blog(models.Model):
     read = models.IntegerField('阅读量', default=0)
     catagory = models.ForeignKey("Catagory", verbose_name='分类', on_delete=models.CASCADE)  # verbose_name = ''
     tags = models.ManyToManyField("Tag", verbose_name='标签')
+    isDraft = models.BooleanField('是否是草稿', default=True)
     isDelete = models.BooleanField('是否删除', default=False)
 
     def __str__(self):
