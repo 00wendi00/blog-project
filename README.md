@@ -21,7 +21,7 @@ https
 
 bootstrap
 
-kindeditor
+kindeditor --> 图片和附件上传下载
 
 admin
 
@@ -36,7 +36,7 @@ logging
 
 ### 相关文件
 
-nginx配置文件, uwsgi配置文件, requir文件
+nginx配置文件, uwsgi配置文件, requirements文件
 
 mysite_nginx.conf
 
@@ -68,9 +68,5 @@ SESSION_COOKIE_SECURE = True
 待实现 :
 
 背景色
-
-seo
-
-上传和下载附件
 
 邮件发送失败的处理, celery多次try
