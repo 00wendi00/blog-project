@@ -401,11 +401,15 @@ def user_forget(request):
 
 @csrf_exempt
 def upload_image(request, dir_name):
-    ##################
-    #  kindeditor图片上传返回数据格式说明：
-    # {"error": 1, "message": "出错信息"}
-    # {"error": 0, "url": "图片地址"}
-    ##################
+    """
+    kindeditor图片上传:
+    返回 :
+     {"error": 1, "message": "出错信息"}
+     {"error": 0, "url": "图片地址"}
+    :param request:
+    :param dir_name:
+    :return:
+    """
     result = {"error": 1, "message": "上传出错"}
     files = request.FILES.get("imgFile", None)
     if files:
