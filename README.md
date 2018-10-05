@@ -60,7 +60,6 @@ SESSION_COOKIE_SECURE = True
 ### 生产环境下, https://www.hiwendi.com/
 ### RabbitMQ 管理界面, http://120.78.176.222:15672/#/
 ### api, https://www.hiwendi.com/api/
-### 开发环境下, http://127.0.0.1:8000
 
 
 待实现 :
@@ -68,8 +67,6 @@ SESSION_COOKIE_SECURE = True
 背景色
 
 seo
-
-博客保存草稿箱
 
 上传和下载附件
 
