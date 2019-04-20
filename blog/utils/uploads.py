@@ -46,4 +46,6 @@ def image_upload(files, dir_name):
         file_name = files.name
         path_file = os.path.join(path, file_name)
         open(path_file, 'wb').write(files.file.read())
-        return {"error": 0, "url": settings.MEDIA_URL + relative_path_file + '/' + files.name, 'filename': files.name}
+        return {"error": 0,
+                "url": settings.MEDIA_URL + relative_path_file + '/' + files.name,
+                'filename': files.name}

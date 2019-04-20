@@ -18,6 +18,14 @@ class BlogAdmin(admin.ModelAdmin):
             'js/kindeditor/config.js',
         )
 
+    def get_readonly_fields(self, request, obj=None):
+        """  重新定义此函数，限制普通用户所能修改的字段  """
+        # if request.user.is_superuser:
+        #     self.readonly_fields = []
+        return self.readonly_fields
+
+    readonly_fields = ('read',)
+
 
 @admin.register(Catagory)
 class CatagoryAdmin(admin.ModelAdmin):
@@ -50,7 +58,8 @@ class UserAdmin(admin.ModelAdmin):
         return self.readonly_fields
 
     list_display = ('name', 'email', 'phone', 'password', 'created', 'creatIp')
-    readonly_fields = ('name', 'email', 'phone', 'password', 'created', 'creatIp')
+    readonly_fields = (
+        'name', 'email', 'phone', 'password', 'created', 'creatIp')
 
 
 @admin.register(Loginlog)
@@ -76,6 +85,5 @@ class ViewlogAdmin(admin.ModelAdmin):
     list_display = ('blog', 'userId', 'created', 'ip')
     readonly_fields = ('blog', 'userId', 'created', 'ip')
 
-
-#在admin中注册绑定
+# 在admin中注册绑定
 # admin.site.register(Blog, BlogAdmin)
