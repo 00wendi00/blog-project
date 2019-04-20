@@ -21,7 +21,7 @@ https
 
 bootstrap
 
-kindeditor --> 图片和附件上传下载
+kindeditor + 图片和附件上传下载
 
 admin
 

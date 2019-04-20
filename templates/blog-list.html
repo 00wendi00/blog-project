@@ -36,11 +36,14 @@
         {% endif %}
 
         <ul>
-            {% for blog in blogs %}
+            {% for blog in contacts %}
+                {# Each "contact" is a Contact model object. #}
+                {#        {{ contact.full_name|upper }}<br/>#}
                 <li style="list-style-type:none">
                     <div align="left" class="blog">
                         <div class="title">
-                            <a href="{% url 'blog_get_detail' blog.id %}"><h4>{{ blog.title }}</h4></a>
+                            <a href="{% url 'blog_get_detail' blog.id %}">
+                                <h4>{{ blog.title }}</h4></a>
                         </div>
                     </div>
                     <div class="intro" style="color: #999999">
@@ -57,7 +60,45 @@
                 <hr>
             {% endfor %}
         </ul>
+
+        <ul class="pagination" style="margin-left: 40px">
+            {% if contacts.has_previous %}
+                <li><a href="?page={{ contacts.previous_page_number }}">&laquo;</a></li>
+                <li><a href="?page={{ contacts.previous_page_number }}">{{ contacts.previous_page_number }}</a></li>
+            {% else %}
+                <li><a href="#" onclick="return false;">&laquo;</a></li>
+            {% endif %}
+
+            <li><a href="#" style="font-weight: bold" onclick="return false;">{{ contacts.number }}</a></li>
+
+            {% if contacts.has_next %}
+                <li><a href="?page={{ contacts.next_page_number }}">{{ contacts.next_page_number }}</a></li>
+                <li><a href="?page={{ contacts.next_page_number }}">&raquo;</a></li>
+            {% else %}
+                <li><a href="#" onclick="return false;">&raquo;</a></li>
+            {% endif %}
+
+            <li>&nbsp;</li>
+            <li><span>共{{ contacts.paginator.num_pages }}页</span></li>
+        </ul>
+
+{#        <div class="pagination">#}
+{#            <span class="step-links">#}
+{#                {% if contacts.has_previous %}#}
+{#                    <a href="?page={{ contacts.previous_page_number }}">Previous</a>#}
+{#                {% endif %}#}
+{#                <span class="current">#}
+{#                    Page {{ contacts.number }} of {{ contacts.paginator.num_pages }}.#}
+{#                </span>#}
+{#                {% if contacts.has_next %}#}
+{#                    <a href="?page={{ contacts.next_page_number }}">Next</a>#}
+{#                {% endif %}#}
+{#            </span>#}
+{#        </div>#}
+
     </div>
+
+
 {% endblock %}
 
 
