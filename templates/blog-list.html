@@ -51,7 +51,7 @@
                     </div>
                     <div class="info">
                         <span class="created">{{ blog.created | date:'Y-m-d H:i' }}</span>
-                        <span class="catagory">&nbsp;&nbsp;阅读数:{{ blog.read }}</span>
+                        <span class="catagory">&nbsp;&nbsp;阅读量:{{ blog.read }}</span>
                         <span class="catagory">&nbsp;&nbsp;评论数:{{ blog.conum }}</span>
                         <span class="catagory">&nbsp;&nbsp;目录:{{ blog.catagory.name }}</span>
                         <span class="catagory">&nbsp;&nbsp;标签:{{ blog.alltags }}</span>
@@ -61,7 +61,7 @@
             {% endfor %}
         </ul>
 
-        <ul class="pagination" style="margin-left: 40px">
+        <ul class="pagination" style="margin-left: 40px;padding-bottom: 20px">
             {% if contacts.has_previous %}
                 <li><a href="?page={{ contacts.previous_page_number }}">&laquo;</a></li>
                 <li><a href="?page={{ contacts.previous_page_number }}">{{ contacts.previous_page_number }}</a></li>
