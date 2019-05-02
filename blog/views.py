@@ -55,7 +55,7 @@ def get_blogs(request):
     for blog in blogs:
         conum = blog.comment_set.count
         blog.conum = conum
-        blog.alltags = blog.tags.all()[0].name
+        blog.alltags = ' '.join([item.name for item in blog.tags.all()])
     if request.session.get('uid'):
         is_login = True
     else:
@@ -148,7 +148,7 @@ def get_details(request, blog_id):
 
     conum = blog.comment_set.count
     blog.conum = conum
-    blog.alltags = blog.tags.all()[0].name
+    blog.alltags = ' '.join([item.name for item in blog.tags.all()])
 
     if request.session.get('uid'):
         is_login = True
