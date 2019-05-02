@@ -8,8 +8,6 @@ from blog.models import *
 
 @admin.register(Blog)
 class BlogAdmin(admin.ModelAdmin):
-    list_display = ('title', 'intro', 'created', 'read')
-    filter_horizontal = ('tags',)
 
     class Media:
         js = (
@@ -24,7 +22,9 @@ class BlogAdmin(admin.ModelAdmin):
         #     self.readonly_fields = []
         return self.readonly_fields
 
-    readonly_fields = ('read',)
+    filter_horizontal = ('tags',)
+    list_display = ('title', 'intro', 'created', 'read')
+    readonly_fields = ('created', 'read',)
 
 
 @admin.register(Catagory)
