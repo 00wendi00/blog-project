@@ -7,9 +7,9 @@ Desktop.ini
 *.so
 *.egg
 *.egg-info
-/dist/
-/build/
-/vevn/
+/dist
+/build
+/vevn
 
 
 # My configurations:
