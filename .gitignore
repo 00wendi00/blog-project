@@ -7,10 +7,12 @@ Desktop.ini
 *.so
 *.egg
 *.egg-info
-dist
-build
+/dist/
+/build/
+/vevn/
 
 
 # My configurations:
 /.idea/vcs.xml
 /.idea
+
