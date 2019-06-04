@@ -79,9 +79,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'blog',
-        'HOST': 'localhost',
+        'HOST': '0000',
         'PORT': '3306',
-        'USER': 'root',
+        'USER': '0000',
         'PASSWORD': '0000',
         'OPTIONS': {
             'init_command': 'set sql_mode="STRICT_TRANS_TABLES"',
