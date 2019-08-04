@@ -10,11 +10,10 @@ from __future__ import absolute_import
 
 import os
 
-from celery import Celery, platforms, shared_task
+from celery import Celery, platforms
 from django.conf import settings
 
 # set the default Django settings module for the 'celery' program.
-from blog.utils.send_email import send_email_async_mq
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'blog_project.settings')
 
@@ -29,7 +28,6 @@ app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
 platforms.C_FORCE_ROOT = True
 
 
-@shared_task
-def send_email(receivers, name, subject, content):
-    return send_email_async_mq(receivers, name, subject, content)
-
+@app.task(bind=True)
+def debug_task(self):
+    print('Request: {0!r}'.format(self.request))
