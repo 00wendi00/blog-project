@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% block content %}
+
+    <div class="container" style="margin-top:20px;padding-bottom:  30px">
+        <ul>
+            <li style="list-style-type:none">
+                <div align="left" class="blog">
+                    <div class="title">
+                        <h4>
+                            捐赠:&nbsp&nbsp&nbsp
+                            <img src="/static/WechatIMG133.png" width="20%">
+                            &nbsp
+                            <img src="/static/WechatIMG134.png" width="20%">
+                            &nbsp
+                            <img src="/static/WechatIMG135.jpg" width="20%">
+                        </h4>
+                    </div>
+                </div>
+            </li>
+            <hr>
+
+            <li style="list-style-type:none">
+                <div align="left" class="blog">
+                    <div class="title">
+                        <h4>
+                            分类:
+                            {% for catagory in catagorys %}
+                                <a href="/blogs?catagory={{ catagory.id }}">{{ catagory.name }}</a>
+                                &nbsp
+                            {% endfor %}
+                        </h4>
+                    </div>
+                </div>
+            </li>
+            <hr>
+
+            <li style="list-style-type:none">
+                <div align="left" class="blog">
+                    <div class="title">
+                        <h4>
+                            标签:
+                            {% for tag in tags %}
+                                <a href="/blogs?tag={{ tag.id }}">{{ tag.name }}</a>
+                                &nbsp
+                            {% endfor %}
+
+                        </h4>
+                    </div>
+                </div>
+            </li>
+            <hr>
+
+            <li style="list-style-type:none">
+                <div align="left" class="blog">
+                    <div class="title">
+                        <h4>博客列表: </h4>
+                    </div>
+                </div>
+            </li>
+            <hr>
+
+            {% for blog in blogs %}
+                <li style="list-style-type:none">
+                    <div align="left" class="blog">
+                        <div class="title">
+                            <h5>
+                                <a href="{% url 'blog_get_detail' blog.id %}">
+                                    {{ blog.title }}
+                                </a>
+                            </h5>
+                        </div>
+                    </div>
+                </li>
+                <hr>
+            {% endfor %}
+        </ul>
+    </div>
+
+{% endblock %}
+
+
+
+
+
+

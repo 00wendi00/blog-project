@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.conf.urls import url
 from django.urls import include
 from django.views import static
+from django.views.decorators.cache import cache_page
 from django.views.generic import RedirectView
 from django.views.static import serve
 from rest_framework import routers
@@ -42,8 +43,9 @@ urlpatterns = [
     url(r'^detail/(\d+)/$', get_details, name='blog_get_detail'),
     url(r"^upload/(?P<path>.*)$", static.serve, {"document_root": settings.MEDIA_ROOT, }),
 
-    url(r'^catagory/$', get_catagory),
-    url(r'^tag/$', get_tag),
+    url(r'^catagory/$', cache_page(3600 * 24)(get_catagory)),
+    url(r'^tag/$', cache_page(3600 * 24)(get_tag)),
+    url(r'^sitemap/$', cache_page(3600 * 24)(get_sitemap)),
 
     url(r'^user/info/$', user_info),
     url(r'^user/login/$', user_login),

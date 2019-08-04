@@ -1,26 +1,23 @@
 {% extends 'base.html' %}
 {% block content %}
 
-    {% load cache %}
-    {% cache 600 'catagory' %}
     <div class="container" style="margin-top: 20px">
         <ul>
-            {% for catagory in catagorys %}
+            {% for tag in tags %}
                 <li style="list-style-type:none">
                     <div align="left" class="blog">
                         <div class="title">
-                            <h4>分类: <a href="/blogs?catagory={{ catagory.id }}">{{ catagory.name }}</a></h4>
+                            <h4>标签: <a href="/blogs?tag={{ tag.id }}">{{ tag.name }}</a></h4>
                         </div>
                     </div>
                     <div class="info">
-                        <span>描述: {{ catagory.remark }}</span>
+                        <span>描述: {{ tag.remark }}</span>
                     </div>
                 </li>
                 <hr>
             {% endfor %}
         </ul>
     </div>
-    {% endcache %}
 
 {% endblock %}
 

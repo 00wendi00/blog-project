@@ -5,14 +5,15 @@ import logging
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import Http404, HttpResponse
 from django.utils import timezone
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.shortcuts import render, render_to_response, redirect
 from django.views.decorators.csrf import csrf_exempt
 
 from blog.forms import CommentForm
 from blog.models import *
-from blog.utils import encryption, send_email, uploads
-from blog import tasks
+from blog.utils import encryption, uploads
+from blog_project.settings import MAIL_USER
+from blog_project.celery import send_email
 
 
 @csrf_exempt
@@ -25,7 +26,7 @@ def page_error(request):
     return render_to_response('500.html')
 
 
-# @cache_page(60), 视图缓存无法判断是否登录
+# @cache_page(1200)  # 视图缓存无法判断是否登录
 def get_blogs(request):
     '''
     获取博客列表
@@ -35,31 +36,35 @@ def get_blogs(request):
     catagory = request.GET.get("catagory")
     tag = request.GET.get("tag")
     logger = logging.getLogger('app')
+
     try:
         if catagory:
             catagory = Catagory.objects.get(id=catagory)
-            blogs = Blog.objects.all().order_by('-created').filter(
-                isDraft=False, isDelete=False, catagory=catagory)
+            blogs = Blog.objects.all().order_by('-created'). \
+                filter(isDraft=False, isDelete=False, catagory=catagory). \
+                values('id', 'title', 'intro', 'read', 'created', 'catagory__name',
+                       comment_count=Count('comment'),
+                       tag_count=Count('tags'))
         elif tag:
             tag = Tag.objects.get(id=tag)
-            blogs = Blog.objects.all().order_by('-created').filter(
-                isDraft=False, isDelete=False, tags=tag)
+            blogs = Blog.objects.all().order_by('-created'). \
+                filter(isDraft=False, isDelete=False, tags=tag). \
+                values('id', 'title', 'intro', 'read', 'created', 'catagory__name',
+                       comment_count=Count('comment'),
+                       tag_count=Count('tags'))
         else:
-            blogs = Blog.objects.all().order_by('-created').filter(
-                isDraft=False, isDelete=False)
+            blogs = Blog.objects.all().order_by('-created').filter(isDraft=False, isDelete=False). \
+                values('id', 'title', 'intro', 'read', 'created', 'catagory__name',
+                       comment_count=Count('comment'),
+                       tag_count=Count('tags'))
     except Exception:
         logger.info(
             'bloglist does not exist, catagory=%s, tag=%s' % (catagory, tag))
         raise Http404
 
-    for blog in blogs:
-        conum = blog.comment_set.count
-        blog.conum = conum
-        blog.alltags = ' '.join([item.name for item in blog.tags.all()])
-    if request.session.get('uid'):
-        is_login = True
-    else:
-        is_login = False
+    # for blog in blogs:
+    #     多对多关系, blogs中每个blog找出tags, 效率问题待解决
+    #     blog.alltags = ' '.join([item.name for item in blog.tags.all()])
 
     # 分页
     paginator = Paginator(blogs, 8)  # Show 6 contacts per page
@@ -73,8 +78,7 @@ def get_blogs(request):
         # If page is out of range (e.g. 9999), deliver last page of results.
         contacts = paginator.page(paginator.num_pages)
 
-    info = {'catagory': catagory, 'tag': tag, 'title': '张文迪的博客',
-            'is_login': is_login, 'contacts': contacts}
+    info = {'catagory': catagory, 'tag': tag, 'title': '张文迪的博客', 'contacts': contacts}
 
     return render_to_response('blog-list.html', info)
 
@@ -85,14 +89,14 @@ def get_catagory(request):
     :param request:
     :return:
     '''
-    catagorys = Catagory.objects.filter(isDelete=False)
-    if request.session.get('uid'):
-        is_login = True
-    else:
-        is_login = False
+    catagorys = Catagory.objects.filter(isDelete=False).values('id', 'name')
+    # if request.session.get('uid'):
+    #     is_login = True
+    # else:
+    #     is_login = False
 
-    info = {'catagorys': catagorys, 'title': '张文迪的博客分类', 'is_login': is_login, }
-    return render_to_response('blog_catagory.html', info)
+    info = {'catagorys': catagorys, 'title': '博客分类'}
+    return render_to_response('blog-catagory.html', info)
 
 
 def get_tag(request):
@@ -101,14 +105,24 @@ def get_tag(request):
     :param request:
     :return:
     '''
-    tags = Tag.objects.filter(isDelete=False)
-    if request.session.get('uid'):
-        is_login = True
-    else:
-        is_login = False
+    tags = Tag.objects.filter(isDelete=False).values('id', 'name')
 
-    info = {'tags': tags, 'title': '张文迪的博客标签', 'is_login': is_login, }
-    return render_to_response('blog_tag.html', info)
+    info = {'tags': tags, 'title': '博客标签'}
+    return render_to_response('blog-tag.html', info)
+
+
+def get_sitemap(request):
+    '''
+    获取标签列表
+    :param request:
+    :return:
+    '''
+    tags = Tag.objects.filter(isDelete=False).values('id', 'name')
+    catagorys = Catagory.objects.filter(isDelete=False).values('id', 'name')
+    blogs = Blog.objects.all().order_by('-created').filter(isDraft=False, isDelete=False).values('id', 'title')
+
+    info = {'tags': tags, 'catagorys': catagorys, 'blogs': blogs, 'title': '网站地图', }
+    return render_to_response('blog-sitemap.html', info)
 
 
 def get_details(request, blog_id):
@@ -118,9 +132,10 @@ def get_details(request, blog_id):
     :param blog_id:
     :return:
     '''
+    logger = logging.getLogger('app')
+
     try:
-        logger = logging.getLogger('app')
-        blog = Blog.objects.get(id=blog_id, isDraft=False, isDelete=False)
+        blog = Blog.objects.get(id=blog_id, isDelete=False)
         blog.read += 1
         blog.save()
 
@@ -133,6 +148,7 @@ def get_details(request, blog_id):
     except Blog.DoesNotExist:
         logger.info('blog does not exist, blog_id=%s' % blog_id)
         return Http404
+
     if request.method == 'GET':  # 若为get请求
         form = CommentForm()
     else:
@@ -140,20 +156,25 @@ def get_details(request, blog_id):
         if form.is_valid():
             cleaned_data = form.cleaned_data
             cleaned_data['blog'] = blog
-
-            if request.session.get('uid'):
-                cleaned_data['userId'] = request.session['uid']
+            uid = request.session.get('uid', default=0)
+            cleaned_data['userId'] = uid
             Comment.objects.create(**cleaned_data)
+
+            user_name = "匿名用户"
+            if uid != 0:
+                user_name = User.objects.get(id=uid).name
+            blog_title = Blog.objects.get(id=blog_id).title
+            send_email.delay([MAIL_USER],
+                             user_name,
+                             '<{user_name}>评论博客<{blog_title}>'.format(
+                                 user_name=user_name, blog_title=blog_title),
+                             cleaned_data['content'])
+
         form = CommentForm()
 
     conum = blog.comment_set.count
     blog.conum = conum
     blog.alltags = ' '.join([item.name for item in blog.tags.all()])
-
-    if request.session.get('uid'):
-        is_login = True
-    else:
-        is_login = False
 
     # 评论
     comments = blog.comment_set.all().order_by('-created')
@@ -169,11 +190,13 @@ def get_details(request, blog_id):
         'blog': blog,
         'comments': comments,
         'form': form,
-        'is_login': is_login,
     }
     return render(request, 'blog-details.html', ctx)
 
 
+# 用户信息页面在登出后不能继续用缓存页面, 而要刷新
+# 使用@vary_on_cookie装饰器 --> 也无法达到效果
+# @vary_on_cookie
 def user_login(request):
     '''
     用户登录
@@ -256,8 +279,8 @@ def user_regist(request):
             User.objects.create(name=name, email=email, phone=phone,
                                 password=password, creatIp=getIP(request))
             # send_email.send_email_async([email], name, '注册成功', '恭喜您成功注册网站用户!')  # 线程发送邮箱
-            tasks.send_email.delay([email], name, '注册成功',
-                                   '恭喜您成功注册网站用户!')  # mq + celery 发送邮件
+            send_email.delay([email], name, '注册成功',
+                             '恭喜您成功注册网站用户!')  # mq + celery 发送邮件
             return render(request, 'login.html', {'error': '注册成功, 请登录!'})
 
     else:
@@ -277,12 +300,12 @@ def user_info(request):
         login_time = user.loginlog_set.order_by('-created')
         user.login_time = login_time[0].created
 
-        return render(request, 'user-info.html',
-                      {'user': user, 'is_login': True})
+        return render(request, 'user-info.html', {'user': user})
     else:
         return render(request, 'login.html')
 
 
+# @vary_on_cookie
 def user_logout(request):
     '''
     用户登出
@@ -335,8 +358,7 @@ def user_reset(request):
         else:
             return render(request, 'login.html')
 
-    return render(request, 'reset-passwd.html',
-                  {'remarks': remarks, 'is_login': True})
+    return render(request, 'reset-passwd.html', {'remarks': remarks})
 
 
 def user_forget(request):
@@ -360,14 +382,14 @@ def user_forget(request):
                 verify.save()
 
                 # send_email.send_email_async(email, user.name, '重置密码验证码', '您的验证码为%s' % verify.code)
-                tasks.send_email.delay(email, user.name, '重置密码验证码',
-                                       '您的验证码为%s' % verify.code)
+                send_email.delay([email], user.name, '重置密码验证码',
+                                 '您的验证码为%s' % verify.code)
                 request.session['verify'] = user.email
                 return render(request, 'forget-passwd1.html',
-                              {'remarks': '已发送验证码', 'is_login': False})
+                              {'remarks': '已发送验证码'})
             else:
                 return render(request, 'forget-passwd0.html',
-                              {'remarks': '账号库找不到此邮箱, 请确认!', 'is_login': False})
+                              {'remarks': '账号库找不到此邮箱, 请确认!'})
         elif request.POST.get('verification'):
             if request.session.get('verify'):
                 code = request.POST['verification']
@@ -385,28 +407,26 @@ def user_forget(request):
                         verify.save()
                         request.session['verify_success'] = "success"
                         return render(request, 'forget-passwd2.html',
-                                      {'remarks': '', 'is_login': False})
+                                      {'remarks': ''})
                     else:
                         verify.verifyFailed += 1
                         verify.save()
                         return render(request, 'forget-passwd1.html',
-                                      {'remarks': '验证码错误 ! ',
-                                       'is_login': False})
+                                      {'remarks': '验证码错误 ! '})
                 else:
                     return render(request, 'forget-passwd0.html',
-                                  {'remarks': '验证码已失效, 需重新发送!',
-                                   'is_login': False})
+                                  {'remarks': '验证码已失效, 需重新发送!'})
 
             else:
                 return render(request, 'forget-passwd0.html',
-                              {'remarks': '验证码已过期, 需重新发送!', 'is_login': False})
+                              {'remarks': '验证码已过期, 需重新发送!'})
 
         elif request.POST.get('newpasswd1'):
             passwd1 = request.POST['newpasswd1']
             passwd2 = request.POST['newpasswd2']
             if passwd1 != passwd2:
                 return render(request, 'forget-passwd2.html',
-                              {'remarks': '两次输入的新密码不一致!', 'is_login': False})
+                              {'remarks': '两次输入的新密码不一致!'})
 
             if request.session.get('verify') and request.session.get(
                     'verify_success') == 'success':
@@ -429,22 +449,18 @@ def user_forget(request):
                     return render(request, 'login.html')
                 else:
                     return render(request, 'forget-passwd0.html',
-                                  {'remarks': '验证码已过期, 需重新发送!',
-                                   'is_login': False})
+                                  {'remarks': '验证码已过期, 需重新发送!'})
             else:
                 return render(request, 'forget-passwd0.html',
-                              {'remarks': '验证码已过期, 需重新发送!', 'is_login': False})
+                              {'remarks': '验证码已过期, 需重新发送!'})
 
     if request.session.get('verify_success'):
-        return render(request, 'forget-passwd2.html',
-                      {'remarks': '', 'is_login': False})
+        return render(request, 'forget-passwd2.html', {'remarks': ''})
 
     if request.session.get('verify'):
-        return render(request, 'forget-passwd1.html',
-                      {'remarks': '', 'is_login': False})
+        return render(request, 'forget-passwd1.html', {'remarks': ''})
 
-    return render(request, 'forget-passwd0.html',
-                  {'remarks': '', 'is_login': False})
+    return render(request, 'forget-passwd0.html', {'remarks': ''})
 
 
 @csrf_exempt
