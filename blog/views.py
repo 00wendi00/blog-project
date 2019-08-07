@@ -78,6 +78,17 @@ def get_blogs(request):
         # If page is out of range (e.g. 9999), deliver last page of results.
         contacts = paginator.page(paginator.num_pages)
 
+    if contacts.has_previous():
+        if catagory:
+            contacts.previous_url = '?catagory={}&page={}'.format(catagory.id, contacts.previous_page_number())
+        if tag:
+            contacts.previous_url = '?tag={}&page={}'.format(tag.id, contacts.previous_page_number())
+    elif contacts.has_next():
+        if catagory:
+            contacts.next_url = '?catagory={}&page={}'.format(catagory.id, contacts.next_page_number())
+        if tag:
+            contacts.next_url = '?tag={}&page={}'.format(tag.id, contacts.next_page_number())
+
     info = {'catagory': catagory, 'tag': tag, 'title': '张文迪的博客', 'contacts': contacts}
 
     return render_to_response('blog-list.html', info)

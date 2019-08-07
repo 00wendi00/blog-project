@@ -63,8 +63,8 @@
 
         <ul class="pagination" style="margin-left: 40px;padding-bottom: 20px">
             {% if contacts.has_previous %}
-                <li><a href="?page={{ contacts.previous_page_number }}">&laquo;</a></li>
-                <li><a href="?page={{ contacts.previous_page_number }}">{{ contacts.previous_page_number }}</a></li>
+                <li><a href="{{ contacts.previous_url }}">&laquo;</a></li>
+                <li><a href="{{ contacts.previous_url }}">{{ contacts.previous_page_number }}</a></li>
             {% else %}
                 <li><a href="#" onclick="return false;">&laquo;</a></li>
             {% endif %}
@@ -72,8 +72,8 @@
             <li><a href="#" style="font-weight: bold" onclick="return false;">{{ contacts.number }}</a></li>
 
             {% if contacts.has_next %}
-                <li><a href="?page={{ contacts.next_page_number }}">{{ contacts.next_page_number }}</a></li>
-                <li><a href="?page={{ contacts.next_page_number }}">&raquo;</a></li>
+                <li><a href="{{ contacts.next_url }}">{{ contacts.next_page_number }}</a></li>
+                <li><a href="{{ contacts.next_url }}">&raquo;</a></li>
             {% else %}
                 <li><a href="#" onclick="return false;">&raquo;</a></li>
             {% endif %}
