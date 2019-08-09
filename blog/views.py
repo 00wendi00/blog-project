@@ -2,7 +2,6 @@ import json
 import random
 import logging
 
-from django.core.cache import cache
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import Http404, HttpResponse
 from django.utils import timezone
@@ -13,6 +12,7 @@ from django.views.decorators.csrf import csrf_exempt
 from blog.forms import CommentForm
 from blog.models import *
 from blog.utils import encryption, uploads
+from blog.utils.memcache import get_tags_dict
 from blog_project.settings import MAIL_USER
 from blog_project.celery import send_email
 
@@ -58,22 +58,9 @@ def get_blogs(request):
             'bloglist does not exist, catagory=%s, tag=%s' % (catagory, tag))
         raise Http404
 
-    # cache tags
-    tags_dict = cache.get('tags_dict')
-    if not tags_dict:
-        tags_list = Tag.objects.all().values_list('blog', 'blog__tags__name')
-        tags_dict = {}
-        for item in tags_list:
-            if item[0] in tags_dict:
-                if item[1] not in tags_dict[item[0]]:
-                    tags_dict[item[0]].append(item[1])
-            elif item[0]:
-                tags_dict[item[0]] = [item[1]]
-
-        tags_dict = {key: ' '.join(tags_dict[key]) for key in tags_dict}
-        cache.set('tags_dict', tags_dict, 3600 * 24 * 30)
+    # 从缓存中取 tags
     for blog in blogs:
-        blog['alltags'] = tags_dict[blog['id']]
+        blog['alltags'] = get_tags_dict()[blog['id']]
 
     # 分页
     paginator = Paginator(blogs, 8)  # Show 8 contacts per page
@@ -94,7 +81,7 @@ def get_blogs(request):
             contacts.previous_url = '?tag={}&page={}'.format(tag.id, contacts.previous_page_number())
         else:
             contacts.previous_url = '?page={}'.format(contacts.previous_page_number())
-    elif contacts.has_next():
+    if contacts.has_next():
         if catagory:
             contacts.next_url = '?catagory={}&page={}'.format(catagory.id, contacts.next_page_number())
         elif tag:
@@ -187,7 +174,7 @@ def get_details(request, blog_id):
             user_name = "匿名用户"
             if uid != 0:
                 user_name = User.objects.get(id=uid).name
-            blog_title = Blog.objects.get(id=blog_id).title
+            blog_title = blog.title
             send_email.delay([MAIL_USER],
                              user_name,
                              '<{user_name}>评论博客<{blog_title}>'.format(
@@ -196,12 +183,11 @@ def get_details(request, blog_id):
 
         form = CommentForm()
 
-    conum = blog.comment_set.count
-    blog.conum = conum
-    blog.alltags = ' '.join([item.name for item in blog.tags.all()])
-
     # 评论
     comments = blog.comment_set.all().order_by('-created')
+    blog.conum = comments.count()
+    blog.alltags = get_tags_dict()[blog.id]
+
     for i in range(len(comments)):
         comments[i].floor = '#%d楼' % (len(comments) - i)
         if comments[i].userId:
