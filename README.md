@@ -5,7 +5,7 @@
 
 ## 一.说明
 
-### 环境Python3.6.4, Django2.2; djangorestframework==3.9.1; 系统环境ubuntu14.04, uwsgi, Nginx, mysql
+### 环境Python3.6.4, Django==2.1.11; djangorestframework==3.9.1; 系统环境ubuntu14.04, uwsgi, Nginx, mysql
 
 Django2.0.7存在安全问题, 改为版本2.1 : https://nvd.nist.gov/vuln/detail/CVE-2018-14574
 

@@ -2,6 +2,7 @@ import json
 import random
 import logging
 
+from django.core.cache import cache
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import Http404, HttpResponse
 from django.utils import timezone
@@ -42,32 +43,40 @@ def get_blogs(request):
             catagory = Catagory.objects.get(id=catagory)
             blogs = Blog.objects.all().order_by('-created'). \
                 filter(isDraft=False, isDelete=False, catagory=catagory). \
-                values('id', 'title', 'intro', 'read', 'created', 'catagory__name',
-                       comment_count=Count('comment'),
-                       tag_count=Count('tags'))
+                values('id', 'title', 'intro', 'read', 'created', 'catagory__name', comment_count=Count('comment'))
         elif tag:
             tag = Tag.objects.get(id=tag)
             blogs = Blog.objects.all().order_by('-created'). \
                 filter(isDraft=False, isDelete=False, tags=tag). \
-                values('id', 'title', 'intro', 'read', 'created', 'catagory__name',
-                       comment_count=Count('comment'),
-                       tag_count=Count('tags'))
+                values('id', 'title', 'intro', 'read', 'created', 'catagory__name', comment_count=Count('comment'))
         else:
-            blogs = Blog.objects.all().order_by('-created').filter(isDraft=False, isDelete=False). \
-                values('id', 'title', 'intro', 'read', 'created', 'catagory__name',
-                       comment_count=Count('comment'),
-                       tag_count=Count('tags'))
+            blogs = Blog.objects.all().order_by('-created'). \
+                filter(isDraft=False, isDelete=False). \
+                values('id', 'title', 'intro', 'read', 'created', 'catagory__name', comment_count=Count('comment'))
     except Exception:
         logger.info(
             'bloglist does not exist, catagory=%s, tag=%s' % (catagory, tag))
         raise Http404
 
-    # for blog in blogs:
-    #     多对多关系, blogs中每个blog找出tags, 效率问题待解决
-    #     blog.alltags = ' '.join([item.name for item in blog.tags.all()])
+    # cache tags
+    tags_dict = cache.get('tags_dict')
+    if not tags_dict:
+        tags_list = Tag.objects.all().values_list('blog', 'blog__tags__name')
+        tags_dict = {}
+        for item in tags_list:
+            if item[0] in tags_dict:
+                if item[1] not in tags_dict[item[0]]:
+                    tags_dict[item[0]].append(item[1])
+            elif item[0]:
+                tags_dict[item[0]] = [item[1]]
+
+        tags_dict = {key: ' '.join(tags_dict[key]) for key in tags_dict}
+        cache.set('tags_dict', tags_dict, 3600 * 24 * 30)
+    for blog in blogs:
+        blog['alltags'] = tags_dict[blog['id']]
 
     # 分页
-    paginator = Paginator(blogs, 8)  # Show 6 contacts per page
+    paginator = Paginator(blogs, 8)  # Show 8 contacts per page
     page = request.GET.get('page')
     try:
         contacts = paginator.page(page)
@@ -81,13 +90,17 @@ def get_blogs(request):
     if contacts.has_previous():
         if catagory:
             contacts.previous_url = '?catagory={}&page={}'.format(catagory.id, contacts.previous_page_number())
-        if tag:
+        elif tag:
             contacts.previous_url = '?tag={}&page={}'.format(tag.id, contacts.previous_page_number())
+        else:
+            contacts.previous_url = '?page={}'.format(contacts.previous_page_number())
     elif contacts.has_next():
         if catagory:
             contacts.next_url = '?catagory={}&page={}'.format(catagory.id, contacts.next_page_number())
-        if tag:
+        elif tag:
             contacts.next_url = '?tag={}&page={}'.format(tag.id, contacts.next_page_number())
+        else:
+            contacts.next_url = '?page={}'.format(contacts.next_page_number())
 
     info = {'catagory': catagory, 'tag': tag, 'title': '张文迪的博客', 'contacts': contacts}
 
