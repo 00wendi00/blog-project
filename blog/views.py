@@ -3,7 +3,8 @@ import random
 import logging
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.urls import reverse
 from django.utils import timezone
 from django.db.models import Q, Count
 from django.shortcuts import render, render_to_response, redirect
@@ -160,9 +161,7 @@ def get_details(request, blog_id):
         logger.info('blog does not exist, blog_id=%s' % blog_id)
         return Http404
 
-    if request.method == 'GET':  # 若为get请求
-        form = CommentForm()
-    else:
+    if request.method == 'POST':  # 若为get请求
         form = CommentForm(request.POST)
         if form.is_valid():
             cleaned_data = form.cleaned_data
@@ -181,8 +180,12 @@ def get_details(request, blog_id):
                                  user_name=user_name, blog_title=blog_title),
                              cleaned_data['content'])
 
-        form = CommentForm()
+        # redirect('/detail', blog_id=blog_id)
+        # redirect('/detail/{}'.format(blog_id))
+        # HttpResponseRedirect('/detail/{}'.format(blog_id))
+        return HttpResponseRedirect(reverse('blog_get_detail', args=[blog_id, ]))
 
+    form = CommentForm()
     # 评论
     comments = blog.comment_set.all().order_by('-created')
     blog.conum = comments.count()
