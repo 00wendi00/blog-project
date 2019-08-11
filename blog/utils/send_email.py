@@ -5,13 +5,14 @@
 # @Date  : 2018/7/28
 # @Desc  : 发送邮件
 
-import smtplib
-from threading import Thread
-from email.mime.text import MIMEText
-from email.header import Header
 
 import logging
+from threading import Thread
+
+import smtplib
 from django.conf import settings
+from email.mime.text import MIMEText
+from email.header import Header
 
 
 def send_email_async_mq(receivers, name, subject, content):

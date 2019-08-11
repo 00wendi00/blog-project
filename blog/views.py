@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import json
 import random
 import logging
@@ -12,8 +14,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from blog.forms import CommentForm
 from blog.models import *
-from blog.utils import encryption, uploads
-from blog.utils.memcache import get_tags_dict
+from blog.utils import uploads, utils
 from blog_project.settings import MAIL_USER
 from blog_project.celery import send_email
 
@@ -61,7 +62,7 @@ def get_blogs(request):
 
     # 从缓存中取 tags
     for blog in blogs:
-        blog['alltags'] = get_tags_dict()[blog['id']]
+        blog['alltags'] = utils.get_tags_dict()[blog['id']]
 
     # 分页
     paginator = Paginator(blogs, 8)  # Show 8 contacts per page
@@ -153,9 +154,9 @@ def get_details(request, blog_id):
 
         if request.session.get('uid'):
             Viewlog.objects.create(userId=request.session.get('uid'),
-                                   ip=getIP(request), blog_id=blog.id).save()
+                                   ip=utils.getIP(request), blog_id=blog.id).save()
         else:
-            Viewlog.objects.create(ip=getIP(request), blog_id=blog.id).save()
+            Viewlog.objects.create(ip=utils.getIP(request), blog_id=blog.id).save()
 
     except Blog.DoesNotExist:
         logger.info('blog does not exist, blog_id=%s' % blog_id)
@@ -189,7 +190,7 @@ def get_details(request, blog_id):
     # 评论
     comments = blog.comment_set.all().order_by('-created')
     blog.conum = comments.count()
-    blog.alltags = get_tags_dict()[blog.id]
+    blog.alltags = utils.get_tags_dict()[blog.id]
 
     for i in range(len(comments)):
         comments[i].floor = '#%d楼' % (len(comments) - i)
@@ -219,7 +220,7 @@ def user_login(request):
     if request.method == 'POST':
         account = request.POST.get('account')
         password0 = request.POST.get('password')
-        password = encryption.gainCipher(password0)
+        password = utils.gainCipher(password0)
 
         user = User.objects.all()
 
@@ -240,7 +241,7 @@ def user_login(request):
                 request.session.set_expiry(18000)  # session过期时间 5小时
 
                 # 记录日志
-                Loginlog.objects.create(classify=1, ip=getIP(request),
+                Loginlog.objects.create(classify=1, ip=utils.getIP(request),
                                         user=user[0])
                 # loginfailed = 0
                 user = User.objects.extra(where=[
@@ -282,7 +283,7 @@ def user_regist(request):
         name = request.POST.get('name')
         email = request.POST.get('email')
         phone = request.POST.get('phone')
-        password = encryption.gainCipher(request.POST.get('password'))
+        password = utils.gainCipher(request.POST.get('password'))
 
         user = User.objects.filter(Q(email=email) | Q(phone=phone))
         if user or len(user) > 0:
@@ -290,7 +291,7 @@ def user_regist(request):
             return render(request, 'regist.html', {'error': '此邮箱或电话已注册'})
         else:
             User.objects.create(name=name, email=email, phone=phone,
-                                password=password, creatIp=getIP(request))
+                                password=password, creatIp=utils.getIP(request))
             # send_email.send_email_async([email], name, '注册成功', '恭喜您成功注册网站用户!')  # 线程发送邮箱
             send_email.delay([email], name, '注册成功',
                              '恭喜您成功注册网站用户!')  # mq + celery 发送邮件
@@ -327,7 +328,7 @@ def user_logout(request):
     '''
     if request.session.get('uid'):
         user = User.objects.get(id=request.session.get('uid'))
-        Loginlog.objects.create(classify=2, ip=getIP(request), user=user)
+        Loginlog.objects.create(classify=2, ip=utils.getIP(request), user=user)
         del request.session['uid']
         del request.session['account']
         del request.session['email']
@@ -335,14 +336,6 @@ def user_logout(request):
 
     nextUrl = '/'
     return redirect(nextUrl)
-
-
-def getIP(request):
-    if request.META.get('HTTP_X_FORWARDED_FOR'):
-        ip = request.META['HTTP_X_FORWARDED_FOR']
-    else:
-        ip = request.META['REMOTE_ADDR']
-    return ip
 
 
 def user_reset(request):
@@ -359,8 +352,8 @@ def user_reset(request):
             newpasswd2 = request.POST.get('newpasswd2')
             if newpasswd1 == newpasswd2:
                 user = User.objects.get(id=request.session['uid'])
-                if user.password == encryption.gainCipher(oldpasswd):
-                    user.password = encryption.gainCipher(newpasswd1)
+                if user.password == utils.gainCipher(oldpasswd):
+                    user.password = utils.gainCipher(newpasswd1)
                     user.loginFailed = 0
                     user.save()
                     return render(request, 'user-info.html')
@@ -391,7 +384,7 @@ def user_forget(request):
                 verify = VerifyCode.objects.create(user=user)
                 verify.code = str(random.randint(100000, 999999))
                 verify.email = email
-                verify.ip = getIP(request)
+                verify.ip = utils.getIP(request)
                 verify.save()
 
                 # send_email.send_email_async(email, user.name, '重置密码验证码', '您的验证码为%s' % verify.code)
@@ -454,7 +447,7 @@ def user_forget(request):
                     user = \
                         User.objects.filter(
                             email=request.session.get('verify'))[0]
-                    user.password = encryption.gainCipher(passwd1)
+                    user.password = utils.encryption.gainCipher(passwd1)
                     user.loginFailed = 0
                     user.save()
                     del request.session['verify']
