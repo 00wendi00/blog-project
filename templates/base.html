@@ -38,6 +38,14 @@
     {#$('.content img').css({'width': '100%', 'height': 'auto', 'visibility': 'inherit'});#}
 
     <script>
+        var _hmt = _hmt || [];
+        (function () {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm.js?b487d16a8e8aeeb83a33f89bf1549d70";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+
         {#图片自适应大小, 响应式#}
         $(window).load(function () {
             $(".content img").addClass("img-responsive img-rounded");
