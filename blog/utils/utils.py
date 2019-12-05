@@ -46,13 +46,16 @@ def gainCipher(password, salt=settings.MD5_SALT):
     return None
 
 
-def get_tags_dict():
+def get_tags_dict(new=False):
     """
     缓存和获取所有博客的tags
     :return: {'blog_id':'tag1 tag2'}
     """
-    # cache tags
-    tags_dict = cache.get('tags_dict')
+    if new:
+        tags_dict = None
+    else:
+        tags_dict = cache.get('tags_dict')
+
     if not tags_dict:
         tags_list = Tag.objects.all().values_list('blog', 'blog__tags__name')
         tags_dict = {}

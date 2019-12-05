@@ -6,6 +6,7 @@ import logging
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.core.cache import cache
 from django.urls import reverse
 from django.utils import timezone
 from django.db.models import Q, Count
@@ -61,8 +62,13 @@ def get_blogs(request):
         raise Http404
 
     # 从缓存中取 tags
+    cache_dict = utils.get_tags_dict()
     for blog in blogs:
-        blog['alltags'] = utils.get_tags_dict()[blog['id']]
+        if blog['id'] in cache_dict:
+            blog['alltags'] = cache_dict[blog['id']]
+        else:
+            cache_dict = utils.get_tags_dict(True)
+            blog['alltags'] = cache_dict[blog['id']]
 
     # 分页
     paginator = Paginator(blogs, 8)  # Show 8 contacts per page
@@ -72,9 +78,11 @@ def get_blogs(request):
     except PageNotAnInteger:
         # If page is not an integer, deliver first page.
         contacts = paginator.page(1)
+        logger.info("paginator error, PageNotAnInteger")
     except EmptyPage:
         # If page is out of range (e.g. 9999), deliver last page of results.
         contacts = paginator.page(paginator.num_pages)
+        logger.info("paginator error, EmptyPage")
 
     if contacts.has_previous():
         if catagory:
