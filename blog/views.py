@@ -110,7 +110,7 @@ def get_catagory(request):
     :param request:
     :return:
     '''
-    catagorys = Catagory.objects.filter(isDelete=False).values('id', 'name')
+    catagorys = Catagory.objects.filter(isDelete=False).values('id', 'name', 'remark')
     # if request.session.get('uid'):
     #     is_login = True
     # else:
@@ -126,7 +126,7 @@ def get_tag(request):
     :param request:
     :return:
     '''
-    tags = Tag.objects.filter(isDelete=False).values('id', 'name')
+    tags = Tag.objects.filter(isDelete=False).values('id', 'name', 'remark')
 
     info = {'tags': tags, 'title': '博客标签'}
     return render_to_response('blog-tag.html', info)
