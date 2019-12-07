@@ -8,7 +8,6 @@ from blog.models import *
 
 @admin.register(Blog)
 class BlogAdmin(admin.ModelAdmin):
-
     class Media:
         js = (
             'js/kindeditor/kindeditor-all.js',
@@ -84,6 +83,18 @@ class ViewlogAdmin(admin.ModelAdmin):
 
     list_display = ('blog', 'userId', 'created', 'ip')
     readonly_fields = ('blog', 'userId', 'created', 'ip')
+
+
+@admin.register(Blacklist)
+class BlacklistAdmin(admin.ModelAdmin):
+    def get_readonly_fields(self, request, obj=None):
+        """  重新定义此函数，限制普通用户所能修改的字段  """
+        # if request.user.is_superuser:
+        #     self.readonly_fields = []
+        return self.readonly_fields
+
+    list_display = ('ip', 'remark', 'created',)
+    readonly_fields = ('created',)
 
 # 在admin中注册绑定
 # admin.site.register(Blog, BlogAdmin)

@@ -4,6 +4,21 @@
     <div class="container" style="margin-top: 20px">
         <div style="margin: 0px 50px">
             <ul>
+                <li style="list-style-type:none">
+                    <div align="left" class="blog">
+                        <div class="title">
+                            <h4>
+                                所有标签:
+                                {% for tag in tags %}
+                                    &nbsp
+                                    <a href="/blogs?tag={{ tag.id }}">{{ tag.name }}</a>
+                                    &nbsp
+                                {% endfor %}
+                            </h4>
+                        </div>
+                    </div>
+                </li>
+                <hr>
                 {% for tag in tags %}
                     <li style="list-style-type:none">
                         <div align="left" class="blog">
