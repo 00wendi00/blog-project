@@ -10,6 +10,7 @@
                             <h4>
                                 所有标签:
                                 {% for tag in tags %}
+                                    &nbsp
                                     <a href="/blogs?tag={{ tag.id }}">{{ tag.name }}</a>
                                     &nbsp
                                 {% endfor %}

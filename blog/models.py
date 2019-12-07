@@ -104,3 +104,15 @@ class VerifyCode(models.Model):
     verifyFailed = models.IntegerField('验证失败次数', default=0)
     success = models.BooleanField('是否验证成功', default=False)
     ip = models.CharField('ip地址', max_length=20, null=True)
+
+
+class Blacklist(models.Model):
+    """
+    ip黑名单
+    """
+    ip = models.CharField('ip地址', max_length=50, null=False)
+    remark = models.CharField('描述', max_length=50, null=True)
+    created = models.DateTimeField('创建时间', auto_now_add=True)
+
+    def __str__(self):
+        return self.ip
