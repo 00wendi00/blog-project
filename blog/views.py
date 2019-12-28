@@ -154,7 +154,7 @@ def get_details(request, blog_id):
     logger = logging.getLogger('app')
 
     try:
-        blog = Blog.objects.get(id=blog_id, isDelete=False)
+        blog = Blog.objects.get(id=blog_id)
         blog.read += 1
         blog.save()
 
