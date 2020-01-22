@@ -154,7 +154,7 @@ def get_details(request, blog_id):
     logger = logging.getLogger('app')
 
     try:
-        blog = Blog.objects.get(id=blog_id)
+        blog = Blog.objects.get(id=blog_id, isDelete=False)
         blog.read += 1
         blog.save()
 
@@ -168,7 +168,7 @@ def get_details(request, blog_id):
         logger.info('blog does not exist, blog_id=%s' % blog_id)
         return Http404
 
-    if request.method == 'POST':  # 若为get请求
+    if request.method == 'POST':  # 若为POST请求
         form = CommentForm(request.POST)
         if form.is_valid():
             cleaned_data = form.cleaned_data
@@ -196,7 +196,12 @@ def get_details(request, blog_id):
     # 评论
     comments = blog.comment_set.all().order_by('-created')
     blog.conum = comments.count()
-    blog.alltags = utils.get_tags_dict()[blog.id]
+
+    tags_all = utils.get_tags_dict()
+    if blog.id in tags_all:
+        blog.alltags = tags_all[blog.id]
+    else:
+        blog.alltags = utils.get_tags_dict(True)[blog.id]
 
     for i in range(len(comments)):
         comments[i].floor = '#%d楼' % (len(comments) - i)
