@@ -24,8 +24,8 @@ SECRET_KEY = '#c)(b%omfs9b=52gm(d)uefcli*71rt0u0j-4yy*!o1tm22%j0'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-# ALLOWED_HOSTS = [ 'localhost', '127.0.0.1']
-ALLOWED_HOSTS = ['www.hiwendi.com']
+ALLOWED_HOSTS = ['172.18.7.36', 'localhost', '127.0.0.1', 'www.hiwendi.com', 'hiwendi.com', '120.78.176.222']
+# ALLOWED_HOSTS = ['www.hiwendi.com']
 
 # Application definition
 
@@ -39,7 +39,10 @@ INSTALLED_APPS = [
     'blog',
     'rest_framework',
     'djcelery',
+    # 'django.contrib.sites'
 ]
+
+# SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -49,6 +52,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'blog.middlewares.BlacklistMiddleware'
 ]
 
 ROOT_URLCONF = 'blog_project.urls'
@@ -76,17 +80,28 @@ WSGI_APPLICATION = 'blog_project.wsgi.application'
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
 DATABASES = {
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'NAME': 'blog',
+    #     'HOST': 'mysql',
+    #     'PORT': '3306',
+    #     'USER': '0000',
+    #     'PASSWORD': '0000',
+    #     'OPTIONS': {
+    #         'init_command': 'set sql_mode="STRICT_TRANS_TABLES"',
+    #     },
+    # },
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'blog',
-        'HOST': '0000',
+        'HOST': 'mysql',
         'PORT': '3306',
         'USER': '0000',
         'PASSWORD': '0000',
         'OPTIONS': {
             'init_command': 'set sql_mode="STRICT_TRANS_TABLES"',
         },
-    },
+    }
 }
 
 # Password validation
@@ -140,8 +155,8 @@ LOGGING = {
         'django': {
             'level': 'INFO',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': '/var/log/blog-django.log',
-            # 'filename': 'D:\\data\\django.log',
+            # 'filename': '/var/log/blog-django.log',
+            'filename': '/Users/wendi/Desktop/document-learn/log/django.log',
             'maxBytes': 1024 * 1024 * 5,  # 5 MB
             'backupCount': 100,
             'formatter': 'detail',
@@ -149,8 +164,8 @@ LOGGING = {
         'app': {
             'level': 'INFO',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': '/var/log/blog-app.log',
-            # 'filename': 'D:\\data\\app.log',
+            # 'filename': '/var/log/blog-app.log',
+            'filename': '/Users/wendi/Desktop/document-learn/log/app.log',
             'maxBytes': 1024 * 1024 * 5,  # 5 MB
             'backupCount': 100,
             'formatter': 'detail',
@@ -173,13 +188,14 @@ LOGGING = {
 
 LANGUAGE_CODE = 'en-us'
 
+USE_TZ = False
+
 TIME_ZONE = 'Asia/Shanghai'
 
 USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
 
 # 防止浏览器猜测内容类型, 改写Content-Type header
 # To prevent the browser from guessing the content type and force it to always use the type provided
@@ -191,14 +207,14 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_BROWSER_XSS_FILTER = True
 
 # http redirect https website
-# SECURE_SSL_REDIRECT = False
-SECURE_SSL_REDIRECT = True
+SECURE_SSL_REDIRECT = False
+# SECURE_SSL_REDIRECT = True
 
 # 和SSL配合使用
 # Whether to use a secure cookie for the session cookie. If this is set to True, the cookie will be marked as "secure,"
 # which means browsers may ensure that the cookie is only sent under an HTTPS connection.
-# SESSION_COOKIE_SECURE = False
-SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = False
+# SESSION_COOKIE_SECURE = True
 
 # Whether to use a secure cookie for the CSRF cookie. If this is set to True, the cookie will be marked as "secure,"
 # which means browsers may ensure that the cookie is only sent with an HTTPS connection.
@@ -208,14 +224,21 @@ X_FRAME_OPTIONS = 'DENY'
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',  # 这个缓存是多进程和线程安全的
+#         'TIMEOUT': None,  # 缓存超时时间（默认300秒，None表示永不过期，0表示立即过期）
+#         'OPTIONS': {
+#             'MAX_ENTRIES': 300,  # 最大缓存记录的数量（默认300）
+#             'CULL_FREQUENCY': 3,  # 缓存到达最大个数之后，剔除缓存个数的比例，即：1/CULL_FREQUENCY（默认3）
+#         },
+#     }
+# }
+
 CACHES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',  # 这个缓存是多进程和线程安全的
-        'TIMEOUT': 60,  # 缓存超时时间（默认300秒，None表示永不过期，0表示立即过期）
-        'OPTIONS': {
-            'MAX_ENTRIES': 300,  # 最大缓存记录的数量（默认300）
-            'CULL_FREQUENCY': 3,  # 缓存到达最大个数之后，剔除缓存个数的比例，即：1/CULL_FREQUENCY（默认3）
-        },
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',  # 这个缓存是多进程和线程安全的
+        'LOCATION': 'memcached:11211',
     }
 }
 
@@ -229,17 +252,18 @@ STATICFILES_DIRS = (
     # '/static/',
 )
 
-MD5_SALT = ''
+MD5_SALT = 'wadecheung'
 
 MAIL_HOST = 'smtp.qq.com'
 MAIL_USER = '842876912@qq.com'
 MAIL_PASS = ''
 MAIL_PORT = 465
-MAIL_HEADER = '张文迪的邮箱'
+MAIL_HEADER = '张文迪的邮箱<842876912@qq.com>'
 
 import djcelery
 
 djcelery.setup_loader()
 # 数据库调度
 CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
-BROKER_URL = 'amqp://账号:密码@127.0.0.1:5672/vhost'
+BROKER_URL = 'amqp://username:password@rabbitmq:5672/vhost'
+CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
