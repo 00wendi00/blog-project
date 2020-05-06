@@ -10,34 +10,39 @@ RabbitMQ: http://120.78.176.222:15672/#/
 #### 环境Python3.6.4, Django==2.2.9; djangorestframework==3.9.1; 系统环境ubuntu14.04, uwsgi, Nginx, mysql
 #### 使用技术
 
+Django, admin, uwsgi
+
+Nginx
+
+https
+
 RabbitMQ
 
 celery
 
-https
+mysql
+
+Memcached
 
 bootstrap
 
 kindeditor + 图片和附件上传下载
 
-admin
+docker
 
-cache
+docker-compose
 
-threading --> 异步发送邮件
-
-hashlib.md5
-
-logging
 
 
 #### 相关文件
 
-nginx配置文件, uwsgi配置文件, requirements文件
+nginx配置文件, conf/my.cnf, conf/mysite_nginx.conf
 
-mysite_nginx.conf
+uwsgi配置文件, conf/myweb_uwsgi.ini
 
-myweb_uwsgi.ini
+django连接mysql补充文件, conf/base.py, conf/operations.py
+
+mysql init文件, conf/init.sql
 
 requirements.txt
 
@@ -47,8 +52,9 @@ requirements.txt
 背景
 
 
-### 二. 部署生产环境注意修改settings.py
+### 二. 部署生产环境
 
+#### 1, 注意修改settings.py
 ALLOWED_HOSTS
 
 DEBUG = False
@@ -60,6 +66,11 @@ DEBUG = False
 SECURE_SSL_REDIRECT = True
 
 SESSION_COOKIE_SECURE = True
+
+#### docker-compose
+docker build -t blog ./
+
+docker-compose up -d
 
 
 ### 三. 问题汇总

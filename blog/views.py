@@ -20,7 +20,7 @@ from blog_project.celery import send_email
 
 
 @csrf_exempt
-def page_not_found(request):
+def page_not_found(request, exception):
     return render_to_response('404.html')
 
 

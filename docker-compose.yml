@@ -1,0 +1,84 @@
+version: '2'
+services:
+    nginx:
+        image: nginx:1.11.13
+        container_name: nginx
+        ports:
+            - 80:80
+            - 443:443
+        depends_on:
+            - web
+        volumes:
+            - ./conf/nginx.conf:/etc/nginx/nginx.conf
+            - ./conf/mysite_nginx.conf:/etc/nginx/sites-enabled/mysite_nginx.conf
+            - ./log/nginx:/var/log/nginx
+            - ./conf/cert:/etc/nginx/cert
+            - ./static:/var/www/static
+            - ./tmp/nginx:/tmp/nginx
+    mysql:
+        image: mysql:5.7
+        hostname: mysql
+        container_name: mysql
+        ports:
+            - "3306:3306"
+        environment:
+            MYSQL_ROOT_PASSWORD: "mysql_root_pwd"
+        volumes:
+            - ./mysql/data/:/var/lib/mysql/
+            - ./conf/my.cnf:/etc/mysql/my.cnf
+            - ./conf/init.sql:/docker-entrypoint-initdb.d/init.sql
+    memcached:
+        image: memcached:1.4.23
+        hostname: memcached
+        container_name: memcached
+        restart: "no"
+        ports:
+            - "11211:11211"
+        command: "memcached -m 80 -u root -l 127.0.0.1"
+    rabbitmq:
+        image: rabbitmq:3.7-management
+        hostname: rabbitmq
+        container_name: rabbitmq
+        restart: "no"
+        ports:
+            - "5672:5672"
+            - "15672:15672"
+        environment:
+            RABBITMQ_DEFAULT_VHOST: "vhost"
+            RABBITMQ_DEFAULT_USER: "user"
+            RABBITMQ_DEFAULT_PASS: "password"
+    celery:
+        image: zhangwendi/blog:latest
+        hostname: celery
+        container_name: celery
+        depends_on:
+            - mysql
+            - rabbitmq
+        volumes:
+            - ./blog:/home/app/blog_project/blog
+            - ./blog_project:/home/app/blog_project/blog_project
+            - ./static:/home/app/blog_project/static
+            - ./templates:/home/app/blog_project/templates
+            - ./manage.py:/home/app/blog_project/manage.py
+            - ./myweb_uwsgi.ini:/home/app/blog_project/myweb_uwsgi.ini
+            - ./log/django:/var/log
+        command: "/usr/local/bin/python3.6 manage.py celery worker -c 2 -l info"
+    web:
+        image: zhangwendi/blog:latest
+        hostname: web
+        container_name: web
+        ports:
+            - "8000:8000"
+        depends_on:
+            - mysql
+            - memcached
+            - rabbitmq
+        volumes:
+            - ./blog:/home/app/blog_project/blog
+            - ./blog_project:/home/app/blog_project/blog_project
+            - ./static:/home/app/blog_project/static
+            - ./templates:/home/app/blog_project/templates
+            - ./manage.py:/home/app/blog_project/manage.py
+            - ./myweb_uwsgi.ini:/home/app/blog_project/myweb_uwsgi.ini
+            - ./log/django:/var/log
+        command: "uwsgi --ini myweb_uwsgi.ini"
