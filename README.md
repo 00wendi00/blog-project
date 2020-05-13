@@ -33,7 +33,6 @@ docker
 docker-compose
 
 
-
 #### 相关文件
 
 nginx配置文件, conf/my.cnf, conf/mysite_nginx.conf
@@ -52,6 +51,15 @@ requirements.txt
 背景
 
 
+#### 关于缓存
+
+1, MemCached缓存了每个blog的tags
+
+2, Django页面缓存
+
+3, Nginx静态文件的缓存
+
+
 ### 二. 部署生产环境
 
 #### 1, 注意修改settings.py
@@ -67,10 +75,11 @@ SECURE_SSL_REDIRECT = True
 
 SESSION_COOKIE_SECURE = True
 
-#### docker-compose
+#### 2, docker-compose
 docker build -t blog ./
 
 docker-compose up -d
+
 
 
 ### 三. 问题汇总
