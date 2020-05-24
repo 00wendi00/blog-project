@@ -1,10 +1,6 @@
 ## 个人博客源码
 地址: https://www.hiwendi.com/
 
-测试api: https://www.hiwendi.com/api/
-
-RabbitMQ: http://120.78.176.222:15672/#/
-
 ### 一.说明
 
 #### 环境Python3.6.4, Django==2.2.9; djangorestframework==3.9.1; 系统环境ubuntu14.04, uwsgi, Nginx, mysql
