@@ -28,6 +28,8 @@ docker
 
 docker-compose
 
+wordcloud2
+
 
 #### 相关文件
 
