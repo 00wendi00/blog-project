@@ -49,6 +49,53 @@
                         </div>
                     </div>
                 </li>
+
+                <li style="list-style-type:none">
+                    <div align="left" class="blog">
+                        <div id="canvas-container" align="center">
+                            <!--定义一个cavans容器作为画布显示-->
+                            <canvas id="canvas" width="700px" height="300px"></canvas>
+                        </div>
+                        <script>
+                            // 构造options
+                            var options = eval({
+                                "list": [
+                                    ['原创', 4],
+                                    ['转载', 5],
+                                    ['翻译 ', 3],
+                                    ['Kubernetes', 6],
+                                    ['Docker', 4],
+                                    ['Spark', 5],
+                                    ['MongoDB', 4],
+                                    ['Mysql', 3],
+                                    ['Hadoop', 3],
+                                    ['梯子', 3],
+                                    ['Redis', 3],
+                                    ['方案', 3],
+                                    ['Jupyter', 3],
+                                    ['Scrapy', 3],
+                                    ['apollo', 3],
+                                    ['高可用', 3],
+                                    ['keepalived', 3],
+                                    ['haproxy', 3],
+                                    ['队列', 3]
+                                ],
+                                "gridSize": 10, // size of the grid in pixels
+                                "weightFactor": 10, // number to multiply for size of each word in the list
+                                "fontWeight": 'normal', // 'normal', 'bold' or a callback
+                                "fontFamily": 'Times, serif', // font to use
+                                "color": 'random-light', // 'random-dark' or 'random-light'
+                                "backgroundColor": '#fff', // the color of canvas
+                                "rotateRatio": 1 // probability for the word to rotate. 1 means always rotate
+                            });
+                            var canvas = document.getElementById('canvas');
+                            //调用WordCloud
+                            WordCloud(canvas, options);
+
+                        </script>
+                    </div>
+                </li>
+
                 <hr>
 
                 <li style="list-style-type:none">
