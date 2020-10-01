@@ -21,12 +21,12 @@ from blog_project.celery import send_email
 
 @csrf_exempt
 def page_not_found(request, exception):
-    return render_to_response('404.html')
+    return render_to_response('404.html', {'description': utils.get_desc()})
 
 
 @csrf_exempt
 def page_error(request):
-    return render_to_response('500.html')
+    return render_to_response('500.html', {'description': utils.get_desc()})
 
 
 # @cache_page(1200)  # 视图缓存无法判断是否登录
@@ -36,6 +36,8 @@ def get_blogs(request):
     :param request:
     :return:
     '''
+    Viewlog.objects.create(userId=request.session.get('uid', 0), ip=utils.getIP(request), blog_id=57).save()
+
     catagory = request.GET.get("catagory")
     tag = request.GET.get("tag")
     logger = logging.getLogger('app')
@@ -58,7 +60,8 @@ def get_blogs(request):
     except Exception:
         logger.info(
             'bloglist does not exist, catagory=%s, tag=%s, ip=%s' % (catagory, tag, utils.getIP(request)))
-        raise Http404
+        # raise Http404
+        return render_to_response('blog-sitemap.html', {'description': utils.get_desc()})
 
     # 从缓存中取 tags
     cache_dict = utils.get_tags_dict()
@@ -97,7 +100,7 @@ def get_blogs(request):
         else:
             contacts.next_url = '?page={}'.format(contacts.next_page_number())
 
-    info = {'catagory': catagory, 'tag': tag, 'title': '张文迪的博客', 'contacts': contacts}
+    info = {'catagory': catagory, 'tag': tag, 'title': '张文迪的博客', 'description': utils.get_desc(), 'contacts': contacts}
 
     return render_to_response('blog-list.html', info)
 
@@ -108,13 +111,15 @@ def get_catagory(request):
     :param request:
     :return:
     '''
+    Viewlog.objects.create(userId=request.session.get('uid', 0), ip=utils.getIP(request), blog_id=56).save()
+
     catagorys = Catagory.objects.filter(isDelete=False).values('id', 'name', 'remark')
     # if request.session.get('uid'):
     #     is_login = True
     # else:
     #     is_login = False
 
-    info = {'catagorys': catagorys, 'title': '博客分类'}
+    info = {'catagorys': catagorys, 'title': '博客分类', 'description': utils.get_desc()}
     return render_to_response('blog-catagory.html', info)
 
 
@@ -124,9 +129,11 @@ def get_tag(request):
     :param request:
     :return:
     '''
+    Viewlog.objects.create(userId=request.session.get('uid', 0), ip=utils.getIP(request), blog_id=55).save()
+
     tags = Tag.objects.filter(isDelete=False).values('id', 'name', 'remark')
 
-    info = {'tags': tags, 'title': '博客标签'}
+    info = {'tags': tags, 'title': '博客标签', 'description': utils.get_desc()}
     return render_to_response('blog-tag.html', info)
 
 
@@ -136,11 +143,13 @@ def get_sitemap(request):
     :param request:
     :return:
     '''
+    Viewlog.objects.create(userId=request.session.get('uid', 0), ip=utils.getIP(request), blog_id=54).save()
+
     tags = Tag.objects.filter(isDelete=False).values('id', 'name')
     catagorys = Catagory.objects.filter(isDelete=False).values('id', 'name')
     blogs = Blog.objects.all().order_by('-created').filter(isDraft=False, isDelete=False).values('id', 'title')
 
-    info = {'tags': tags, 'catagorys': catagorys, 'blogs': blogs, 'title': '网站地图', }
+    info = {'tags': tags, 'catagorys': catagorys, 'blogs': blogs, 'title': '网站地图', 'description': utils.get_desc()}
     return render_to_response('blog-sitemap.html', info)
 
 
@@ -158,15 +167,12 @@ def get_details(request, blog_id):
         blog.read += 1
         blog.save()
 
-        if request.session.get('uid'):
-            Viewlog.objects.create(userId=request.session.get('uid'),
-                                   ip=utils.getIP(request), blog_id=blog.id).save()
-        else:
-            Viewlog.objects.create(ip=utils.getIP(request), blog_id=blog.id).save()
+        Viewlog.objects.create(userId=request.session.get('uid', 0), ip=utils.getIP(request), blog_id=blog.id).save()
 
     except Blog.DoesNotExist:
         logger.info('blog does not exist, blog_id=%s' % blog_id)
-        return Http404
+        # return Http404
+        return render_to_response('blog-sitemap.html', {'description': utils.get_desc()})
 
     if request.method == 'POST':  # 若为POST请求
         form = CommentForm(request.POST)
@@ -212,6 +218,7 @@ def get_details(request, blog_id):
 
     ctx = {
         'title': blog.title,
+        'description': utils.get_desc(blog.id),
         'blog': blog,
         'comments': comments,
         'form': form,
@@ -241,7 +248,7 @@ def user_login(request):
             if user[0].loginFailed >= 5:
                 # 返回提示, 输入错误密码次数过多, 账户已锁定
                 return render(request, 'login.html',
-                              {'error': '输入错误密码次数过多, 账户已锁定'})
+                              {'error': '输入错误密码次数过多, 账户已锁定', 'description': utils.get_desc()})
 
             if password == user[0].password:
                 # 写入Session
@@ -274,14 +281,14 @@ def user_login(request):
                 logger = logging.getLogger('app')
                 logger.info('登录失败, 账户=%s,密码=%s' % (account, password0))
 
-                return render(request, 'login.html', {'error': '用户名或密码错误'})
+                return render(request, 'login.html', {'error': '用户名或密码错误', 'description': utils.get_desc()})
         else:
-            return render(request, 'login.html', {'error': '用户名或密码错误'})
+            return render(request, 'login.html', {'error': '用户名或密码错误', 'description': utils.get_desc()})
 
     else:
         if request.session.get('verify'):
             del request.session['verify']
-        return render(request, 'login.html', {'next': request.GET.get('next')})
+        return render(request, 'login.html', {'next': request.GET.get('next'), 'description': utils.get_desc()})
 
 
 def user_regist(request):
@@ -299,17 +306,17 @@ def user_regist(request):
         user = User.objects.filter(Q(email=email) | Q(phone=phone))
         if user or len(user) > 0:
             # 返回提示, 此邮箱和电话已注册
-            return render(request, 'regist.html', {'error': '此邮箱或电话已注册'})
+            return render(request, 'regist.html', {'error': '此邮箱或电话已注册', 'description': utils.get_desc()})
         else:
             User.objects.create(name=name, email=email, phone=phone,
                                 password=password, creatIp=utils.getIP(request))
             # send_email.send_email_async([email], name, '注册成功', '恭喜您成功注册网站用户!')  # 线程发送邮箱
             send_email.delay([email], name, '注册成功',
                              '恭喜您成功注册网站用户!')  # mq + celery 发送邮件
-            return render(request, 'login.html', {'error': '注册成功, 请登录!'})
+            return render(request, 'login.html', {'error': '注册成功, 请登录!', 'description': utils.get_desc()})
 
     else:
-        return render(request, 'regist.html')
+        return render(request, 'regist.html', {'description': utils.get_desc()})
 
 
 def user_info(request):
@@ -325,9 +332,9 @@ def user_info(request):
         login_time = user.loginlog_set.order_by('-created')
         user.login_time = login_time[0].created
 
-        return render(request, 'user-info.html', {'user': user})
+        return render(request, 'user-info.html', {'user': user, 'description': utils.get_desc()})
     else:
-        return render(request, 'login.html')
+        return render(request, 'login.html', {'description': utils.get_desc()})
 
 
 # @vary_on_cookie
@@ -367,15 +374,15 @@ def user_reset(request):
                     user.password = utils.gainCipher(newpasswd1)
                     user.loginFailed = 0
                     user.save()
-                    return render(request, 'user-info.html')
+                    return render(request, 'user-info.html', {'description': utils.get_desc()})
                 else:
                     remarks = '原密码错误!'
             else:
                 remarks = '两次输入的新密码不一致!'
         else:
-            return render(request, 'login.html')
+            return render(request, 'login.html', {'description': utils.get_desc()})
 
-    return render(request, 'reset-passwd.html', {'remarks': remarks})
+    return render(request, 'reset-passwd.html', {'remarks': remarks, 'description': utils.get_desc()})
 
 
 def user_forget(request):
@@ -403,10 +410,10 @@ def user_forget(request):
                                  '您的验证码为%s' % verify.code)
                 request.session['verify'] = user.email
                 return render(request, 'forget-passwd1.html',
-                              {'remarks': '已发送验证码'})
+                              {'remarks': '已发送验证码', 'description': utils.get_desc()})
             else:
                 return render(request, 'forget-passwd0.html',
-                              {'remarks': '账号库找不到此邮箱, 请确认!'})
+                              {'remarks': '账号库找不到此邮箱, 请确认!', 'description': utils.get_desc()})
         elif request.POST.get('verification'):
             if request.session.get('verify'):
                 code = request.POST['verification']
@@ -424,26 +431,26 @@ def user_forget(request):
                         verify.save()
                         request.session['verify_success'] = "success"
                         return render(request, 'forget-passwd2.html',
-                                      {'remarks': ''})
+                                      {'remarks': '', 'description': utils.get_desc()})
                     else:
                         verify.verifyFailed += 1
                         verify.save()
                         return render(request, 'forget-passwd1.html',
-                                      {'remarks': '验证码错误 ! '})
+                                      {'remarks': '验证码错误 ! ', 'description': utils.get_desc()})
                 else:
                     return render(request, 'forget-passwd0.html',
-                                  {'remarks': '验证码已失效, 需重新发送!'})
+                                  {'remarks': '验证码已失效, 需重新发送!', 'description': utils.get_desc()})
 
             else:
                 return render(request, 'forget-passwd0.html',
-                              {'remarks': '验证码已过期, 需重新发送!'})
+                              {'remarks': '验证码已过期, 需重新发送!', 'description': utils.get_desc()})
 
         elif request.POST.get('newpasswd1'):
             passwd1 = request.POST['newpasswd1']
             passwd2 = request.POST['newpasswd2']
             if passwd1 != passwd2:
                 return render(request, 'forget-passwd2.html',
-                              {'remarks': '两次输入的新密码不一致!'})
+                              {'remarks': '两次输入的新密码不一致!', 'description': utils.get_desc()})
 
             if request.session.get('verify') and request.session.get(
                     'verify_success') == 'success':
@@ -463,21 +470,21 @@ def user_forget(request):
                     user.save()
                     del request.session['verify']
                     del request.session['verify_success']
-                    return render(request, 'login.html')
+                    return render(request, 'login.html', {'description': utils.get_desc()})
                 else:
                     return render(request, 'forget-passwd0.html',
-                                  {'remarks': '验证码已过期, 需重新发送!'})
+                                  {'remarks': '验证码已过期, 需重新发送!', 'description': utils.get_desc()})
             else:
                 return render(request, 'forget-passwd0.html',
-                              {'remarks': '验证码已过期, 需重新发送!'})
+                              {'remarks': '验证码已过期, 需重新发送!', 'description': utils.get_desc()})
 
     if request.session.get('verify_success'):
-        return render(request, 'forget-passwd2.html', {'remarks': ''})
+        return render(request, 'forget-passwd2.html', {'remarks': '', 'description': utils.get_desc()})
 
     if request.session.get('verify'):
-        return render(request, 'forget-passwd1.html', {'remarks': ''})
+        return render(request, 'forget-passwd1.html', {'remarks': '', 'description': utils.get_desc()})
 
-    return render(request, 'forget-passwd0.html', {'remarks': ''})
+    return render(request, 'forget-passwd0.html', {'remarks': '', 'description': utils.get_desc()})
 
 
 @csrf_exempt
