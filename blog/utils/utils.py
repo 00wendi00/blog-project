@@ -6,11 +6,13 @@
 # @Desc  : get ip; encrypt; 缓存和获取所有博客的tags
 
 
-from blog.models import Tag
-
+import html
+import re
 from hashlib import md5
 from django.conf import settings
 from django.core.cache import cache
+
+from blog.models import Tag, Blog, Catagory
 
 
 def getIP(request):
@@ -70,3 +72,34 @@ def get_tags_dict(new=False):
         cache.set('tags_dict', tags_dict, 3600 * 24 * 30)
 
     return tags_dict
+
+
+def get_desc(blog_id=0):
+    """
+    缓存和获取所有description, 0存的是所有的title, 其他id存内容
+    :return: {0:'all title', blog_id:'contet'}
+    """
+    desc_dict = cache.get('desc_dict')
+    if not desc_dict or not desc_dict.get(blog_id):
+        desc_dict = {}
+        titles = '张文迪 博客 '
+        tags = Tag.objects.all().filter(isDelete=False).values('name', 'remark')
+        titles += ' '.join([tag['name'] + ' ' + tag['remark'] for tag in tags])
+        categorys = Catagory.objects.all().filter(isDelete=False).values('name', 'remark')
+        titles += ' '.join([category['name'] + ' ' + category['remark'] for category in categorys])
+
+        blogs = Blog.objects.all().filter(isDraft=False, isDelete=False).values('id', 'title', 'content')
+        for blog in blogs:
+            titles += blog['title'] + ' '
+
+            pattern = re.compile(r'<pre.*?>.*?</pre>', re.S)
+            res = re.sub(pattern, '', blog['content'])
+            if res:
+                pattern = re.compile(r'<.*?>|\n|\r|\t|&nbsp;', re.S)
+                res = re.sub(pattern, '', res)
+                res = html.unescape(res).strip()
+            desc_dict[blog['id']] = res or ' '
+
+        desc_dict[0] = titles
+        cache.set('desc_dict', desc_dict, 3600 * 24 * 30)
+    return desc_dict[blog_id]
