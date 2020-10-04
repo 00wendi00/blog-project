@@ -82,9 +82,8 @@ def get_desc(blog_id=0):
     desc_dict = cache.get('desc_dict')
     if not desc_dict or not desc_dict.get(blog_id):
         desc_dict = {}
-        titles = '张文迪 博客 '
         tags = Tag.objects.all().filter(isDelete=False).values('name', 'remark')
-        titles += ' '.join([tag['name'] + ' ' + tag['remark'] for tag in tags])
+        titles = ' '.join([tag['name'] + ' ' + tag['remark'] for tag in tags])
         categorys = Catagory.objects.all().filter(isDelete=False).values('name', 'remark')
         titles += ' '.join([category['name'] + ' ' + category['remark'] for category in categorys])
 
@@ -102,4 +101,4 @@ def get_desc(blog_id=0):
 
         desc_dict[0] = titles
         cache.set('desc_dict', desc_dict, 3600 * 24 * 30)
-    return desc_dict[blog_id]
+    return '张文迪 博客 ' + desc_dict[blog_id]
