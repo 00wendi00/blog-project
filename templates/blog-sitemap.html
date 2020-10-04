@@ -57,29 +57,22 @@
                             <canvas id="canvas" width="700px" height="300px"></canvas>
                         </div>
                         <script>
+                            var words = []
+                            {% for catagory in catagorys %}
+                                words.push(['{{ catagory.name }}', (Math.random() + 1)*2]);
+                            {% endfor %}
+
+                            {% for tag in tags %}
+                                words.push(['{{ tag.name }}', (Math.random() + 1)*2]);
+                            {% endfor %}
+
                             // 构造options
                             var options = eval({
-                                "list": [
-                                    ['原创', 4],
-                                    ['转载', 5],
-                                    ['翻译 ', 3],
-                                    ['Kubernetes', 6],
-                                    ['Docker', 4],
-                                    ['Spark', 5],
-                                    ['MongoDB', 4],
-                                    ['Mysql', 3],
-                                    ['Hadoop', 3],
-                                    ['梯子', 3],
-                                    ['Redis', 3],
-                                    ['方案', 3],
-                                    ['Jupyter', 3],
-                                    ['Scrapy', 3],
-                                    ['apollo', 3],
-                                    ['高可用', 3],
-                                    ['keepalived', 3],
-                                    ['haproxy', 3],
-                                    ['队列', 3]
-                                ],
+                                "list": words,
+                                {#    [#}
+                                {#    ['原创', 4],#}
+                                {#    ['队列', 3]#}
+                                {#],#}
                                 "gridSize": 10, // size of the grid in pixels
                                 "weightFactor": 10, // number to multiply for size of each word in the list
                                 "fontWeight": 'normal', // 'normal', 'bold' or a callback
