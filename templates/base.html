@@ -5,18 +5,26 @@
     <meta name="description" content="{{ description }}">
     <title>{{ title }}</title>
 
-    <script type="text/javascript" src="/static/js/jquery-1.10.2.min.js"></script>
-    <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="/static/js/prettify.min.js"></script>
-    <script type="text/javascript" src="/static/js/wordcloud2.js"></script>
+    <script type="text/javascript" src="/static/js/jquery-1.10.2.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="/static/js/bootstrap.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="/static/js/prettify.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="/static/js/wordcloud2.js" crossorigin="anonymous"></script>
     {#    <script type="text/javascript" src="/static/js/My97DatePicker/WdatePicker.js"></script>#}
-    <link type="text/css" rel="stylesheet" href="/static/css/bootstrap.css">
-    <link type="text/css" rel="stylesheet" href="/static/css/bootstrap-theme.css">
-    <link type="text/css" rel="stylesheet" href="/static/css/prettify.css">
+    <link type="text/css" rel="stylesheet" href="/static/css/bootstrap.css" crossorigin="anonymous">
+    <link type="text/css" rel="stylesheet" href="/static/css/bootstrap-theme.css" crossorigin="anonymous">
+    <link type="text/css" rel="stylesheet" href="/static/css/prettify.css" crossorigin="anonymous">
 
     {#  preload预加载字体和web ico  #}
-    <link rel="preload" as="font" href="https://www.hiwendi.com/static/fonts/glyphicons-halflings-regular.woff2">
-    <link rel="preload" as="image" href="https://www.hiwendi.com/static/favicon.ico">
+    <link rel="preload" as="font" href="https://www.hiwendi.com/static/fonts/glyphicons-halflings-regular.woff2"
+          crossorigin="anonymous">
+    {#    <link rel="preload" as="image" href="/static/favicon.ico" crossorigin="anonymous">#}
+    <link rel="preload" as="script" href="/static/js/jquery-1.10.2.min.js" crossorigin="anonymous">
+    <link rel="preload" as="script" href="/static/js/bootstrap.min.js" crossorigin="anonymous">
+    <link rel="preload" as="script" href="/static/js/prettify.min.js" crossorigin="anonymous">
+    <link rel="preload" as="script" href="/static/js/wordcloud2.js" crossorigin="anonymous">
+    <link rel="preload" as="style" href="/static/css/bootstrap.css" crossorigin="anonymous">
+    <link rel="preload" as="style" href="/static/css/bootstrap-theme.css" crossorigin="anonymous">
+    <link rel="preload" as="style" href="/static/css/prettify.css" crossorigin="anonymous">
 
     <style>
         .blog {
