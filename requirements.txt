@@ -7,7 +7,7 @@ billiard==3.3.0.18
 celery==3.1.15
 cffi==1.11.5
 cryptography==2.3
-Django==2.2.13
+Django==2.2.21
 django-celery==3.2.2
 django-filter==2.0.0
 djangorestframework==3.9.1
