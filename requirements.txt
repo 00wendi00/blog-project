@@ -4,7 +4,7 @@ anyjson==0.3.3
 asn1crypto==0.24.0
 Babel==2.6.0
 billiard==3.3.0.18
-celery==3.1.15
+celery==5.2.2
 cffi==1.11.5
 cryptography==2.3
 Django==2.2.13
